@@ -4,7 +4,7 @@ services:
 
   mosquitto_module:
     image: eclipse-mosquitto:latest
-    container_name: se4as/mosquitto_module
+    container_name: se4as-mosquitto_module
     hostname: mosquitto_module
     volumes:
       - ./mosquitto:/mosquitto
@@ -19,7 +19,7 @@ services:
 
     image: se4as/monitor
     build: ./Monitor
-    container_name: se4as/monitor_module
+    container_name: se4as-monitor_module
     hostname: monitor_module
     ports:
       - "8080:8080"
@@ -31,9 +31,9 @@ services:
       - mosquitto_module
 
   analyzer_module:
-    image: se4as/analyzer_image
+    image: se4as-analyzer_image
     build: ./Analyzer
-    container_name: se4as/analyzer_module
+    container_name: se4as-analyzer_module
     hostname: analyzer_module
     ports:
       - "8090:8080"
@@ -47,7 +47,7 @@ services:
   planner1_module:
     image: se4as/planner1
     build: ./Planner_1
-    container_name: se4as/planner1_module
+    container_name: se4as-planner1_module
     hostname: planner1_module
     ports:
       - "8100:8080"
@@ -61,7 +61,7 @@ services:
   planner2_module:
     image: se4as/planner2
     build: ./Planner_2
-    container_name: se4as/planner2_module
+    container_name: se4as-planner2_module
     hostname: planner2_module
     ports:
       - "8110:8080"
@@ -75,12 +75,32 @@ services:
   executor:
     image: se4as/executor
     build: ./Executor
-    container_name: se4as/executor_module
+    container_name: se4as-executor_module
     hostname: executor_module
     ports:
       - "8120:8080"
     expose:
       - 8120
+    depends_on:
+      - mosquitto_module
+
+  seas_influxdb:
+    image: influxdb:latest
+    container_name: se4as-knowledge
+    hostname: knowledge_module
+    restart: always
+    environment:
+      # Use these same configurations parameters in your telegraf configuration, mytelegraf.conf.
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=adminadmin
+      - DOCKER_INFLUXDB_INIT_ORG=univaq
+      - DOCKER_INFLUXDB_INIT_BUCKET=seas
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=seasinfluxdbtoken
+    ports:
+      - '8086:8086'
+    expose:
+      - 8086
     depends_on:
       - mosquitto_module
 
