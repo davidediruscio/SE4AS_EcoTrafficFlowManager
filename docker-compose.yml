@@ -84,6 +84,18 @@ services:
     depends_on:
       - mosquitto_module
 
+  managed_resources:
+    image: se4as/managed_resources
+    build: ./Managed_resources
+    container_name: se4as-managed_resources_module
+    hostname: managed_resources_module
+    ports:
+      - "8130:8080"
+    expose:
+      - 8130
+    depends_on:
+      - mosquitto_module
+
   seas_influxdb:
     image: influxdb:latest
     container_name: se4as-knowledge
