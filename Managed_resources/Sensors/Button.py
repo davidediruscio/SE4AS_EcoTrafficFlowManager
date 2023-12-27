@@ -1,4 +1,5 @@
 import random
+from paho.mqtt.client import Client
 
 
 class Button:
@@ -8,12 +9,12 @@ class Button:
 
     def __init__(self, traffic_light, start_state=False):
         self._id = traffic_light.get_id()
+        self._state = start_state
 
-    @staticmethod
-    def get_photo():
-        numbers_car = random.randint(0, 5) + 1
-        name_photo = f"img({numbers_car}car).jpeg"
-        f = open("image_test.jpg", "rb")
-        photo_content = f.read()
-        f.close()
-        return photo_content
+    def is_pressed(self):
+        self._state = random.choice([True, False])
+        return self._state
+
+    def simulate(self, client: Client):
+        client.publish(f"sensors/trafficLight/pedestrian/{self._id}", self.is_pressed())
+

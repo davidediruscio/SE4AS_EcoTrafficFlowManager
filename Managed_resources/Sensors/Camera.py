@@ -1,5 +1,5 @@
 import random
-
+from paho.mqtt.client import Client
 
 class Camera:
 
@@ -16,3 +16,7 @@ class Camera:
         photo_content = f.read()
         f.close()
         return photo_content
+
+    def simulate(self, client: Client):
+        client.publish(f"sensors/trafficLight/vehicles/{self._id}", self.get_photo())
+

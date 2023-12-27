@@ -1,5 +1,21 @@
-import time
+from CrossRoad import CrossRoad
 import paho.mqtt.client as mqtt
+
+vehicles_traffic_lights = {}
+pedestrian_traffic_lights = {}
+
+
+def on_connect(client, userdata, flags, rc):
+    client.subscribe("action/take_photo")
+
+
+def on_message(client, userdata, msg):
+    for _, camera in CrossRoad().get_vehicles_traffic_lights():
+        camera.simulate(client)
+    for _, button in CrossRoad().get_pedestrian_traffic_lights():
+        button.simulate(client)
+    CrossRoad().get_humidity_sensor().simulate(client)
+    CrossRoad().get_sound_sensor().simulate(client)
 
 
 if __name__ == "__main__":
@@ -7,29 +23,9 @@ if __name__ == "__main__":
     client = mqtt.Client("Managed_Resources", reconnect_on_failure=True)
     # client.connect("localhost")
     client.connect("mosquitto_module", 1883, 60)
+    client.on_connect = on_connect
+    client.on_message = on_message
 
-    # room creation
-    traffic_lights = []
-    cameras = []
+    on_message(client, None, None)
 
-    bath_room = Room(roomName="bathRoom", light=140, temperature=22, humidity=50, movement=1)
-    rooms.append(bath_room)
-    kitchen = Room(roomName="kitchen", light=150, temperature=20, humidity=50, movement=0)
-    rooms.append(kitchen)
-    bedroom = Room(roomName="bedRoom", light=140, temperature=22, humidity=50, movement=1)
-    rooms.append(bedroom)
-    living_room = Room(roomName="livingRoom", light=180, temperature=27, humidity=48, movement=0)
-    rooms.append(living_room)
-
-    # mode definition inside the knowledge and mode assignment to the rooms
-    try:
-        modes = ModeDefinition()
-        modes.storeModes(rooms)
-    except tenacity.RetryError as e:
-        print("Max retries exceeded")
-
-    while True:
-        for room in rooms:
-            room.simulate(client=client)
-
-        time.sleep(1)
+    client.loop_forever()
