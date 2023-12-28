@@ -1,4 +1,5 @@
 # classe che definisce un semaforo
+from time import sleep
 
 
 class TrafficLight:
@@ -11,6 +12,9 @@ class TrafficLight:
         self._light_status = start_light_status
 
     def set_light_status(self, status):
+        if status == "RED" and self._light_status == "GREEN":
+            self._light_status = "YELLOW"
+            sleep(5)
         self._light_status = status
 
     def get_light_status(self):

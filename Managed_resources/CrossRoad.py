@@ -11,6 +11,7 @@ class CrossRoad:
 
     _vehicles_traffic_lights: dict
     _pedestrian_traffic_lights: dict
+    _traffic_lights: dict
     _humidity_sensor: HumiditySensor
     _sound_sensor: SoundSensor
 
@@ -21,11 +22,13 @@ class CrossRoad:
             while i < numbers_traffic_light_vehicles:
                 traffic_light = TrafficLight(i)
                 cls.instance._vehicles_traffic_lights[traffic_light] = Camera(traffic_light)
+                cls.instance._traffic_lights[i] = traffic_light
                 i += 1
 
             while i < numbers_traffic_light_pedestrian:
                 traffic_light = TrafficLight(i)
                 cls.instance._pedestrian_traffic_lights[traffic_light] = Button(traffic_light)
+                cls.instance._traffic_lights[i] = traffic_light
                 i += 1
 
             cls.instance._humidity_sensor = HumiditySensor(0.8)
@@ -44,3 +47,6 @@ class CrossRoad:
 
     def get_sound_sensor(self):
         return self._sound_sensor
+
+    def get_traffic_light(self, id):
+        return self._traffic_lights[id]
