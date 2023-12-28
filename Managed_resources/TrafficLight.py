@@ -6,9 +6,11 @@ class TrafficLight:
 
     _light_status: str
     _id: int
+    _yellow_time: int
 
-    def __init__(self, identifier, start_light_status="RED"):
+    def __init__(self, identifier, yellow_time, start_light_status="RED"):
         self._id = identifier
+        self._yellow_time = yellow_time
         self._light_status = start_light_status
 
     def set_light_status(self, status):

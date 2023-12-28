@@ -96,6 +96,18 @@ services:
     depends_on:
       - mosquitto_module
 
+  configuration_module:
+    image: se4as/configuration_module
+    build: ./Configuration
+    container_name: se4as-configuration_module
+    hostname: configuration_module
+    ports:
+      - "8140:8080"
+    expose:
+      - 8140
+    depends_on:
+      - mosquitto_module
+
   seas_influxdb:
     image: influxdb:latest
     container_name: se4as-knowledge

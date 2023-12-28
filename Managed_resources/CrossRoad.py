@@ -1,11 +1,9 @@
 from Sensors import SoundSensor, HumiditySensor, Button, Camera
 from TrafficLight import TrafficLight
+import requests
 
-
-numbers_traffic_light_vehicles = 4
-numbers_traffic_light_pedestrian = 4
-
-
+host = "localhost"
+url = f"http://{host}:5008/config/"
 
 class CrossRoad:
 
@@ -19,20 +17,21 @@ class CrossRoad:
         if not hasattr(cls, 'instance'):
             cls.instance = super(CrossRoad, cls).__new__(cls)
             i = 1
-            while i < numbers_traffic_light_vehicles:
-                traffic_light = TrafficLight(i)
+            yellow_time = requests.get(url+"data/yellow_time").json()["data"]
+            while i < requests.get(url+"numbers_traffic_light/vehicles").json()["data"]:
+                traffic_light = TrafficLight(i, yellow_time)
                 cls.instance._vehicles_traffic_lights[traffic_light] = Camera(traffic_light)
                 cls.instance._traffic_lights[i] = traffic_light
                 i += 1
 
-            while i < numbers_traffic_light_pedestrian:
-                traffic_light = TrafficLight(i)
+            while i < requests.get(url+"numbers_traffic_light/pedestrians").json()["data"]:
+                traffic_light = TrafficLight(i, yellow_time)
                 cls.instance._pedestrian_traffic_lights[traffic_light] = Button(traffic_light)
                 cls.instance._traffic_lights[i] = traffic_light
                 i += 1
 
-            cls.instance._humidity_sensor = HumiditySensor(0.8)
-            cls.instance._sound_sensor = SoundSensor(0.8)
+            cls.instance._humidity_sensor = HumiditySensor(requests.get(url+"data/humidity_threshold").json()["data"])
+            cls.instance._sound_sensor = SoundSensor(requests.get(url+"data/sound_threshold").json()["data"])
         return cls.instance
 
 

@@ -1,16 +1,21 @@
 {
   "data": {
-    "crossing_time": 3,
     "number_road_lines": 2,
     "humidity_threshold": 0.8,
+    "yellow_time": 3,
+    "red_threshold": 30,
     "sound_threshold": 0.8
   },
+  "crossing_time":{
+    "normal": 3,
+    "bad_weather": 5
+  },
   "number_traffic_light": {
-    "pedestrian": 4,
+    "pedestrians": 4,
     "vehicles": 4
   },
   "traffic_light_groups": {
-    "pedestrian": {
+    "pedestrians": {
       "group1": [6,8],
       "group2": [5,7]
     },

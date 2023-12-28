@@ -2,9 +2,6 @@ from CrossRoad import CrossRoad
 import paho.mqtt.client as mqtt
 from time import sleep
 
-vehicles_traffic_lights = {}
-pedestrian_traffic_lights = {}
-
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe("action/+")

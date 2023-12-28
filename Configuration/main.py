@@ -17,6 +17,14 @@ def get_data(parameter):
         resp.status_code = 200
     return resp
 
+@app.route("/config/crossing_time/<parameter>", methods=["GET"])
+def get_crossing_time(parameter):
+    with open('config.json', 'r') as f:
+        data = json.loads(f.read())["crossing_time"][parameter]
+        resp = jsonify(data=data)
+        resp.status_code = 200
+    return resp
+
 @app.route("/config/number_traffic_light/<parameter>", methods=["GET"])
 def get_number_traffic_light(parameter):
     with open('config.json', 'r') as f:
@@ -29,7 +37,7 @@ def get_number_traffic_light(parameter):
 def get_traffic_light_groups(parameter):
     with open('config.json', 'r') as f:
         file_content = json.loads(f.read())["traffic_light_groups"]
-        data_pedestrian = file_content["pedestrian"][parameter]
+        data_pedestrian = file_content["pedestrians"][parameter]
         data_vehicles = file_content["vehicles"][parameter]
         data = data_pedestrian + data_vehicles
         resp = jsonify(data=data)
