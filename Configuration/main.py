@@ -44,6 +44,21 @@ def get_traffic_light_groups(parameter):
         resp.status_code = 200
     return resp
 
+@app.route("/config/traffic_light_groups", methods=["GET"])
+def get_groups():
+    with open('config.json', 'r') as f:
+        file_content = json.loads(f.read())["traffic_light_groups"]
+        data_pedestrian = file_content["pedestrians"]
+        data_vehicles = file_content["vehicles"]
+        data = {}
+        for i in data_vehicles:
+            data[i] = data_vehicles[i]
+        for j in data_pedestrian:
+            data[j] += data_pedestrian[j]
+        resp = jsonify(data)
+        resp.status_code = 200
+    return resp
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='localhost', port=5008)
