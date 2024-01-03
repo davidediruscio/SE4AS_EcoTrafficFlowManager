@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+
+  mosquitto_module:
+    image: eclipse-mosquitto:latest
+    container_name: se4as-mosquitto_module
+    hostname: mosquitto_module
+    volumes:
+      - ../mosquitto:/mosquitto
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    environment:
+      - TZ=Europe/Rome
+
+  configuration_module:
+    image: se4as/configuration_module
+    build: ../Configuration
+    container_name: se4as-configuration_module
+    hostname: configuration_module
+    ports:
+      - "5008:5008"
+    expose:
+      - 5008
+    depends_on:
+      - mosquitto_module
+
+
+  managed_resources:
+    image: se4as/managed_resources
+    build: ../Managed_resources
+    container_name: se4as-managed_resources_module
+    hostname: managed_resources_module
+    ports:
+      - "8130:8080"
+    expose:
+      - 8130
+    depends_on:
+      - mosquitto_module
+      - configuration_module
+

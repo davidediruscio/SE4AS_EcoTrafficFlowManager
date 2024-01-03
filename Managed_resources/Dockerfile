@@ -1,9 +1,11 @@
 FROM python:3.10-slim
 LABEL authors="sea4as"
 
-COPY *.py ./executor_src/
+COPY *.py .
+COPY * ./Sensors/ ./Sensors/
+COPY * ./Images/ ./Images/
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 EXPOSE 8120
-CMD ["python", "./executor_src/main.py"]
+CMD ["python", "./main.py"]

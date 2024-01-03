@@ -10,9 +10,9 @@ class Camera:
 
     @staticmethod
     def get_photo():
-        numbers_car = random.randint(0, 4) + 1
-        name_photo = f"img({numbers_car}car).jpeg"
-        f = open("image_test.jpg", "rb")
+        numbers_car = random.randint(0, 3)+1
+        name_photo = f"./Images/img_{numbers_car}car.jpeg"
+        f = open(name_photo, "rb")
         photo_content = f.read()
         f.close()
         return photo_content

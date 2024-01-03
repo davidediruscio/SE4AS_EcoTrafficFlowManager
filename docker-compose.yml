@@ -29,6 +29,8 @@ services:
       - TZ=Europe/Rome
     depends_on:
       - mosquitto_module
+      - configuration_module
+      - seas_influxdb
 
   analyzer_module:
     image: se4as-analyzer_image
@@ -43,6 +45,8 @@ services:
       - TZ=Europe/Rome
     depends_on:
       - mosquitto_module
+      - configuration_module
+      - seas_influxdb
 
   planner1_module:
     image: se4as/planner1
@@ -57,6 +61,8 @@ services:
       - TZ=Europe/Rome
     depends_on:
       - mosquitto_module
+      - configuration_module
+      - seas_influxdb
 
   planner2_module:
     image: se4as/planner2
@@ -71,6 +77,8 @@ services:
       - TZ=Europe/Rome
     depends_on:
       - mosquitto_module
+      - configuration_module
+      - seas_influxdb
 
   executor:
     image: se4as/executor
@@ -83,6 +91,8 @@ services:
       - 8120
     depends_on:
       - mosquitto_module
+      - configuration_module
+      - seas_influxdb
 
   managed_resources:
     image: se4as/managed_resources
@@ -95,6 +105,8 @@ services:
       - 8130
     depends_on:
       - mosquitto_module
+      - configuration_module
+      - seas_influxdb
 
   configuration_module:
     image: se4as/configuration_module

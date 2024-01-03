@@ -2,7 +2,8 @@ import paho.mqtt.client as mqtt
 import time
 import requests
 
-host = "localhost"
+host = "configuration_module"
+#host = "localhost"
 url = f"http://{host}:5008/config/"
 
 class Computation:

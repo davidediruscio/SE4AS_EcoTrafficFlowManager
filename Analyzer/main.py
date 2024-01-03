@@ -5,7 +5,8 @@ import paho.mqtt.client as mqtt
 from Classifier import Classifier
 import time
 
-host = "localhost"
+host = "configuration_module"
+#host = "localhost"
 url = f"http://{host}:5008/config/"
 humidity_threshold = requests.get(url+"data/humidity_threshold").json()["data"]
 sound_threshold = requests.get(url+"data/sound_threshold").json()["data"]
