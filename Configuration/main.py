@@ -33,6 +33,18 @@ def get_number_traffic_light(parameter):
         resp.status_code = 200
     return resp
 
+@app.route("/config/number_traffic_light", methods=["GET"])
+def get_total_traffic_light():
+    with open('config.json', 'r') as f:
+        file_content = json.loads(f.read())["number_traffic_light"]
+        n_tl_pedestrians = file_content["pedestrians"]
+        n_tl_vehicles = file_content["vehicles"]
+        n_tl = n_tl_pedestrians + n_tl_vehicles
+        resp = jsonify(data=n_tl)
+        resp.status_code = 200
+    return resp
+
+
 @app.route("/config/traffic_light_groups/<parameter>", methods=["GET"])
 def get_traffic_light_groups(parameter):
     with open('config.json', 'r') as f:

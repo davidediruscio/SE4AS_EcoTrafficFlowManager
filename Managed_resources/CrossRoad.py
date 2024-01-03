@@ -30,8 +30,8 @@ class CrossRoad:
                 cls.instance._traffic_lights[i] = traffic_light
                 i += 1
 
-            cls.instance._humidity_sensor = HumiditySensor(requests.get(url+"data/humidity_threshold").json()["data"])
-            cls.instance._sound_sensor = SoundSensor(requests.get(url+"data/sound_threshold").json()["data"])
+            cls.instance._humidity_sensor = HumiditySensor()
+            cls.instance._sound_sensor = SoundSensor()
         return cls.instance
 
 
