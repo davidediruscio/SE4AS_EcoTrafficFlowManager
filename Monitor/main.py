@@ -3,12 +3,12 @@ import paho.mqtt.client as mqtt
 
 
 def on_connect(client, userdata, flags, rc):
-    client.subscribe("sensor/#")
+    client.subscribe("sensors/#")
 
 
 def on_message(client, userdata, msg):
     payload = msg.payload.decode()
-    topic = msg.topic.replace("sensor/", "monitor/")
+    topic = msg.topic.replace("sensors/", "monitor/")
     client.publish(topic, payload)
     #db_storing.dbWrite(str(msg.topic), payload)
 

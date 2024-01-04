@@ -14,7 +14,7 @@ class Computation:
             cls.instance._groups = requests.get(url + "traffic_light_groups").json()
         return cls.instance
 
-    def set_light_to_all(self,client, light="RED"):
+    def set_light_to_all(self, client, light="RED"):
         for group in self._groups:
             for tl in self._groups[group]:
                 client.publish(f"action/traffic_light/{tl}", light)

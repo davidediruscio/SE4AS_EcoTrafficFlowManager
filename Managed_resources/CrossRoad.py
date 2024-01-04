@@ -25,13 +25,13 @@ class CrossRoad:
             cls.instance._traffic_lights = {}
             i = 1
             yellow_time = requests.get(url + "data/yellow_time").json()["data"]
-            while i < requests.get(url + "number_traffic_light/vehicles").json()["data"]:
+            while i <= requests.get(url + "number_traffic_light/vehicles").json()["data"]:
                 traffic_light = TrafficLight(i, yellow_time)
                 cls.instance._vehicles_traffic_lights[traffic_light] = Camera(traffic_light)
                 cls.instance._traffic_lights[i] = traffic_light
                 i += 1
 
-            while i < requests.get(url + "number_traffic_light/pedestrians").json()["data"]:
+            while i <= requests.get(url + "number_traffic_light/pedestrians").json()["data"]:
                 traffic_light = TrafficLight(i, yellow_time)
                 cls.instance._pedestrian_traffic_lights[traffic_light] = Button(traffic_light)
                 cls.instance._traffic_lights[i] = traffic_light

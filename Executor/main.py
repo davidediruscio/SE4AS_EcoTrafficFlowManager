@@ -17,7 +17,7 @@ def group_turn_on_msg(client, userdata, msg):
 
 def emergency_msg(client, userdata, msg):
     if eval(msg.payload.decode()):
-        Computation.set_light_to_all(client, "RED")
+        Computation().set_light_to_all(client, "RED")
     else:
         client.publish(f"action/take_photo", True)
 
@@ -27,5 +27,6 @@ if __name__ == "__main__":
     client.on_connect = on_connect
     client.message_callback_add("plan/traffic_light_group/+", group_turn_on_msg)
     client.message_callback_add("plan/emergency", emergency_msg)
+    #client.connect("localhost", 1883, 60)
     client.connect("mosquitto_module", 1883, 60)
     client.loop_forever()

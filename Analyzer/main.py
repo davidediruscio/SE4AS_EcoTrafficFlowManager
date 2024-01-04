@@ -1,3 +1,5 @@
+import base64
+
 import requests
 from PIL import Image
 import io
@@ -16,7 +18,7 @@ def on_connect(client, userdata, flags, rc):
 
 
 def camera_msg(client, userdata, msg):
-    photo_content = msg.payload.decode()
+    photo_content = base64.b64decode(msg.payload.decode())
     identifier = msg.topic.split("/")[3]
     image = Image.open(io.BytesIO(photo_content))
     number_car = Classifier().count_car(image)

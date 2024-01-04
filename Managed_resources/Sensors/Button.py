@@ -12,7 +12,7 @@ class Button:
         self._state = start_state
 
     def is_pressed(self):
-        self._state = random.choice([True, False])
+        self._state = random.random() > 0.8
         return self._state
 
     def simulate(self, client: Client):

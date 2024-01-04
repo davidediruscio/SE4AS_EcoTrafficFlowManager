@@ -39,4 +39,68 @@ services:
     depends_on:
       - mosquitto_module
       - configuration_module
+      - monitor_module
 
+
+  monitor_module:
+
+    image: se4as/monitor
+    build: ../Monitor
+    container_name: se4as-monitor_module
+    hostname: monitor_module
+    ports:
+      - "8080:8080"
+    expose:
+      - 8080
+    environment:
+      - TZ=Europe/Rome
+    depends_on:
+      - mosquitto_module
+      - configuration_module
+
+  analyzer_module:
+    image: se4as-analyzer_image
+    build: ../Analyzer
+    container_name: se4as-analyzer_module
+    hostname: analyzer_module
+    ports:
+      - "8090:8080"
+    expose:
+      - 8090
+    environment:
+      - TZ=Europe/Rome
+    depends_on:
+      - mosquitto_module
+      - configuration_module
+      - monitor_module
+
+  planner1_module:
+    image: se4as/planner1
+    build: ../Planner_1
+    container_name: se4as-planner1_module
+    hostname: planner1_module
+    ports:
+      - "8100:8080"
+    expose:
+      - 8100
+    environment:
+      - TZ=Europe/Rome
+    depends_on:
+      - mosquitto_module
+      - configuration_module
+      - analyzer_module
+
+
+  executor:
+    image: se4as/executor
+    build: ../Executor
+    container_name: se4as-executor_module
+    hostname: executor_module
+    ports:
+      - "8120:8080"
+    expose:
+      - 8120
+    depends_on:
+      - mosquitto_module
+      - configuration_module
+      - planner1_module

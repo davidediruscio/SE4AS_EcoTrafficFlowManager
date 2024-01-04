@@ -1,3 +1,5 @@
+import time
+
 from CrossRoad import CrossRoad
 import paho.mqtt.client as mqtt
 from time import sleep
@@ -16,8 +18,6 @@ def change_status_msg(client, userdata, msg):
 def take_photo_msg(client, userdata, msg):
     for _, camera in CrossRoad().get_vehicles_traffic_lights().items():
         camera.simulate(client)
-    for _, button in CrossRoad().get_pedestrian_traffic_lights().items():
-        button.simulate(client)
 
 
 if __name__ == "__main__":
@@ -28,11 +28,15 @@ if __name__ == "__main__":
     client.on_connect = on_connect
     client.message_callback_add("action/take_photo", take_photo_msg)
     client.message_callback_add("action/traffic_light/+", change_status_msg)
-
+    time.sleep(10)
     take_photo_msg(client, None, None)
 
     client.loop_start()
     while True:
         CrossRoad().get_humidity_sensor().simulate(client)
         CrossRoad().get_sound_sensor().simulate(client)
-        sleep(2)
+        print("start")
+        for _, button in CrossRoad().get_pedestrian_traffic_lights().items():
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", button)
+            button.simulate(client)
+        sleep(10)

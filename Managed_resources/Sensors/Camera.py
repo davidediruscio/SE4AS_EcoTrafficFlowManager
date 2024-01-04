@@ -1,4 +1,7 @@
+import base64
 import random
+import time
+
 from paho.mqtt.client import Client
 
 class Camera:
@@ -10,7 +13,7 @@ class Camera:
 
     @staticmethod
     def get_photo():
-        numbers_car = random.randint(0, 3)+1
+        numbers_car = random.randint(1, 12)
         name_photo = f"./Images/img_{numbers_car}car.jpeg"
         f = open(name_photo, "rb")
         photo_content = f.read()
@@ -18,5 +21,6 @@ class Camera:
         return photo_content
 
     def simulate(self, client: Client):
-        client.publish(f"sensors/trafficLight/vehicles/{self._id}", self.get_photo())
+        photo_encoded = base64.b64encode(self.get_photo()).decode('utf-8')
+        client.publish(f"sensors/trafficLight/vehicles/{self._id}", photo_encoded)
 

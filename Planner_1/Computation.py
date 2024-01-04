@@ -22,20 +22,22 @@ class Computation:
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(Computation, cls).__new__(cls)
-            number_traffic_light = requests.get(url + "number_traffic_light").json()["data"]
+            cls.instance._number_traffic_light = requests.get(url + "number_traffic_light/vehicles").json()["data"]
             now = time.time()
             cls.instance._last_green_time = {}
-            for i in range(number_traffic_light):
+            for i in range(cls.instance._number_traffic_light):
                 cls.instance._last_green_time[i + 1] = now
             cls.instance._count = 0
             cls.instance._crossing_time = requests.get(url + "crossing_time/normal").json()["data"]
             cls.instance._number_road_lines = requests.get(url + "data/number_road_lines").json()["data"]
             cls.instance._emergency = False
             cls.instance._bad_weather = False
+            cls.instance._estimation_time = {}
+            cls.instance._starvation_queue = []
         return cls.instance
 
     def get_emergency(self):
-        return self.emergency
+        return self._emergency
     def set_emergency(self, new_val):
         self._emergency = new_val
 
@@ -46,13 +48,13 @@ class Computation:
             self._crossing_time = requests.get(url + "crossing_time/bad_weather").json()["data"]
 
     def get_crossing_time(self):
-        return self.crossing_time
+        return self._crossing_time
 
     def fill_starvation_queue(self):
         now = time.time()
         red_threshold = requests.get(url + "data/red_threshold").json()["data"]
-        for tl in self.last_green_time:
-            red_time = now - self.last_green_time[tl]
+        for tl in self._last_green_time:
+            red_time = now - self._last_green_time[tl]
             if red_time >= red_threshold and tl not in self._starvation_queue:
                 self._starvation_queue.append(tl)
 
@@ -71,19 +73,19 @@ class Computation:
             if traffic_light in groups[g]:
                 group = g
                 for tl in groups[g]:
-                    self.last_green_time[tl] = time.time() + green_time
+                    self._last_green_time[tl] = time.time() + green_time
                 break
         return group
 
     def check_count(self):
-        if self.count == self.number_traffic_light:
+        if self._count == self._number_traffic_light:
             self._count = 0
             return True
         else:
             return False
 
     def increase_count(self):
-        self.count += 1
+        self._count += 1
 
     def get_max(self):
         max_time = 0
@@ -99,7 +101,7 @@ class Computation:
         if number_vehicles == 0:
             time_i = 0
         else:
-            time_i = (number_vehicles//self.number_road_lines +1)*self.crossing_time
+            time_i = (number_vehicles//self._number_road_lines +1)*self._crossing_time
         self._estimation_time[identifier] = time_i
 
 

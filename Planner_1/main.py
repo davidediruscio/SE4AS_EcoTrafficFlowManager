@@ -28,7 +28,7 @@ def emergency_msg(client, userdata, msg):
 
 def n_vehicles_msg(client, userdata, msg):
     if not Computation().get_emergency():
-        Computation().compute_green_time(int(msg.topic.split("/")[2]), int(msg.payload.decode()))
+        Computation().compute_green_time(int(msg.topic.split("/")[3]), int(msg.payload.decode()))
         Computation().increase_count()
         traffic_light, green_time = -1, 0  # variable inizialization
         if Computation().check_count():
@@ -52,5 +52,6 @@ if __name__ == "__main__":
     client.message_callback_add("analysis/trafficLight/number_vehicles/+", n_vehicles_msg)
     client.message_callback_add("analysis/trafficLight/emergency", emergency_msg)
     client.message_callback_add("analysis/trafficLight/bad_weather", bad_weather_msg)
+    #client.connect("localhost", 1883, 60)
     client.connect("mosquitto_module", 1883, 60)
     client.loop_forever()
