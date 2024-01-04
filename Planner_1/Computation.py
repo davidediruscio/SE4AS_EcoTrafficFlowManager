@@ -11,7 +11,10 @@ class Computation:
     _starvation_queue: list
     _estimation_time: dict
     _last_green_time: dict
+    _last_pressed_button_time: dict
+    _just_pressed_button: dict
     _crossing_time: int
+    _crossing_time_pedestrian: int
     _number_road_lines: int
     _number_traffic_light: int
     _emergency: bool
@@ -29,17 +32,29 @@ class Computation:
                 cls.instance._last_green_time[i + 1] = now
             cls.instance._count = 0
             cls.instance._crossing_time = requests.get(url + "crossing_time/normal").json()["data"]
+            cls.instance._crossing_time_pedestrian = requests.get(url + "crossing_time/pedestrian").json()["data"]
             cls.instance._number_road_lines = requests.get(url + "data/number_road_lines").json()["data"]
             cls.instance._emergency = False
             cls.instance._bad_weather = False
             cls.instance._estimation_time = {}
             cls.instance._starvation_queue = []
+            cls.instance._last_pressed_button_time = {}
+            cls.instance._just_pressed_button = {}
         return cls.instance
 
     def get_emergency(self):
         return self._emergency
     def set_emergency(self, new_val):
         self._emergency = new_val
+
+    def set_just_pressed_button(self, traffic_light, pressed):
+        self._just_pressed_button[traffic_light] = pressed
+
+    def get_just_pressed_button(self, traffic_light):
+        return self._just_pressed_button[traffic_light]
+
+    def set_estimation_time_pedestrian(self, traffic_light):
+        self._estimation_time[traffic_light] = self._crossing_time_pedestrian
 
     def set_crossing_time(self, new_val):
         if new_val:
@@ -56,6 +71,10 @@ class Computation:
         for tl in self._last_green_time:
             red_time = now - self._last_green_time[tl]
             if red_time >= red_threshold and tl not in self._starvation_queue:
+                self._starvation_queue.append(tl)
+        for tl in self._last_pressed_button_time:
+            pressed_time = now - self._last_pressed_button_time[tl]
+            if pressed_time >= red_threshold and self._just_pressed_button[tl] and tl not in self._starvation_queue:
                 self._starvation_queue.append(tl)
 
     def is_starvation_queue_empty(self):
@@ -74,6 +93,8 @@ class Computation:
                 group = g
                 for tl in groups[g]:
                     self._last_green_time[tl] = time.time() + green_time
+                    if tl in self._just_pressed_button:
+                        self._just_pressed_button[tl] = False
                 break
         return group
 

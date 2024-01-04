@@ -35,8 +35,6 @@ if __name__ == "__main__":
     while True:
         CrossRoad().get_humidity_sensor().simulate(client)
         CrossRoad().get_sound_sensor().simulate(client)
-        print("start")
         for _, button in CrossRoad().get_pedestrian_traffic_lights().items():
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", button)
             button.simulate(client)
         sleep(10)

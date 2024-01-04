@@ -8,7 +8,6 @@ host = "configuration_module"
 #host = "localhost"
 url = f"http://{host}:5008/config/"
 
-
 def on_connect(client, userdata, flags, rc):
     client.subscribe("analysis/#")
 
@@ -24,6 +23,14 @@ def emergency_msg(client, userdata, msg):
     if Computation().get_emergency() != val:
         Computation().set_emergency(val)
         client.publish(f"plan/emergency", val)
+
+
+def pressed_button_msg(client, userdata, msg):
+    pressed = eval(msg.payload.decode())
+    identifier = msg.topic.split("/")[3] # dipende dall'topic messo nell'analyzer
+    if pressed and not Computation().get_just_pressed_button(identifier):
+        Computation().set_just_pressed_button(identifier, True)
+        Computation().set_estimation_time_pedestrian(identifier)
 
 
 def n_vehicles_msg(client, userdata, msg):
