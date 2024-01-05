@@ -16,6 +16,10 @@ sound_threshold = requests.get(url+"data/sound_threshold").json()["data"]
 def on_connect(client, userdata, flags, rc):
     client.subscribe("monitor/#")
 
+def button_msg(client, userdata, msg):
+    identifier = msg.topic.split("/")[3]
+    value = eval(msg.payload.decode())
+    client.publish(f"analysis/trafficLight/pressed_button/{identifier}", value)
 
 def camera_msg(client, userdata, msg):
     photo_content = base64.b64decode(msg.payload.decode())
@@ -39,5 +43,6 @@ if __name__ == "__main__":
     client.message_callback_add("monitor/trafficLight/vehicles/+", camera_msg)
     client.message_callback_add("monitor/humidity", humidity_msg)
     client.message_callback_add("monitor/sound", sound_msg)
+    client.message_callback_add("monitor/trafficLight/pedestrian/+", button_msg)
     client.connect("mosquitto_module", 1883, 60)
     client.loop_forever()

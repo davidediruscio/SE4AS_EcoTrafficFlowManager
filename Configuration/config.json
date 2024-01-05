@@ -9,7 +9,7 @@
   "crossing_time":{
     "normal": 3,
     "bad_weather": 5,
-    "pedestrian": 6
+    "pedestrian": 8
   },
   "number_traffic_light": {
     "pedestrians": 4,

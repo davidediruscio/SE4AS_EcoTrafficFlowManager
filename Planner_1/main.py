@@ -9,7 +9,7 @@ host = "configuration_module"
 url = f"http://{host}:5008/config/"
 
 def on_connect(client, userdata, flags, rc):
-    client.subscribe("analysis/#")
+    client.subscribe("analysis/trafficLight/#")
 
 
 def bad_weather_msg(client, userdata, msg):
@@ -25,37 +25,51 @@ def emergency_msg(client, userdata, msg):
         client.publish(f"plan/emergency", val)
 
 
+def choose_group_to_turn_up(client):
+    traffic_light, green_time = -1, 0  # variable inizialization
+    Computation().fill_starvation_queue()
+    client.publish("prova/101", traffic_light)
+    if Computation().is_starvation_queue_empty():  # non ci sono semafori in starvation
+        traffic_light, green_time = Computation().get_max()
+    else:
+        while not Computation().is_starvation_queue_empty():
+            traffic_light, green_time = Computation().get_first_starvation()
+            if green_time != 0:  # esiste un semaforo in starvation con almeno un veicolo
+                green_time = Computation().get_max_time_group(traffic_light)
+                Computation().clear_starvation_group(traffic_light)
+                break
+        if green_time == 0:  # tutti i semafori in starvation hanno 0 veicoli
+            traffic_light, green_time = Computation().get_max()
+    client.publish("prova/100", traffic_light)
+    group = Computation().group_to_light_up(traffic_light, green_time, client)
+    client.publish(f"plan/traffic_light_group/{group}", green_time)
+
+
 def pressed_button_msg(client, userdata, msg):
     pressed = eval(msg.payload.decode())
-    identifier = msg.topic.split("/")[3] # dipende dall'topic messo nell'analyzer
+    identifier = msg.topic.split("/")[3]
     if pressed and not Computation().get_just_pressed_button(identifier):
         Computation().set_just_pressed_button(identifier, True)
-        Computation().set_estimation_time_pedestrian(identifier)
+    elif not pressed and not Computation().get_just_pressed_button(identifier):
+        Computation().set_just_pressed_button(identifier, False)
+    Computation().increase_count()
+    if Computation().check_count():
+        choose_group_to_turn_up(client)
 
 
 def n_vehicles_msg(client, userdata, msg):
     if not Computation().get_emergency():
         Computation().compute_green_time(int(msg.topic.split("/")[3]), int(msg.payload.decode()))
         Computation().increase_count()
-        traffic_light, green_time = -1, 0  # variable inizialization
         if Computation().check_count():
-            Computation().fill_starvation_queue()
-            if Computation().is_starvation_queue_empty():  # non ci sono semafori in starvation
-                traffic_light, green_time = Computation().get_max()
-            else:
-                while not Computation().is_starvation_queue_empty():
-                    traffic_light, green_time = Computation().get_first_starvation()
-                    if green_time != 0:  # esiste un semaforo in starvation con almeno un veicolo
-                        break
-                if green_time == 0:  # tutti i semafori in starvation hanno 0 veicoli
-                    traffic_light, green_time = Computation().get_max()
-            group = Computation().group_to_light_up(traffic_light, green_time)
-            client.publish(f"plan/traffic_light_group/{group}", green_time)
+            choose_group_to_turn_up(client)
+
 
 
 if __name__ == "__main__":
     client = mqtt.Client("Planner1")
     client.on_connect = on_connect
+    client.message_callback_add("analysis/trafficLight/pressed_button/+", pressed_button_msg)
     client.message_callback_add("analysis/trafficLight/number_vehicles/+", n_vehicles_msg)
     client.message_callback_add("analysis/trafficLight/emergency", emergency_msg)
     client.message_callback_add("analysis/trafficLight/bad_weather", bad_weather_msg)

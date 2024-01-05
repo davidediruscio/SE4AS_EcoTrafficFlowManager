@@ -20,12 +20,13 @@ class Computation:
     _emergency: bool
     _bad_weather: bool
     _count: int
+    _groups: dict
 
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(Computation, cls).__new__(cls)
-            cls.instance._number_traffic_light = requests.get(url + "number_traffic_light/vehicles").json()["data"]
+            cls.instance._number_traffic_light = requests.get(url + "number_traffic_light").json()["data"]
             now = time.time()
             cls.instance._last_green_time = {}
             for i in range(cls.instance._number_traffic_light):
@@ -36,10 +37,11 @@ class Computation:
             cls.instance._number_road_lines = requests.get(url + "data/number_road_lines").json()["data"]
             cls.instance._emergency = False
             cls.instance._bad_weather = False
-            cls.instance._estimation_time = {}
+            cls.instance._estimation_time = {i+1: 0 for i in range(cls.instance._number_traffic_light)}
             cls.instance._starvation_queue = []
             cls.instance._last_pressed_button_time = {}
             cls.instance._just_pressed_button = {}
+            cls.instance._groups = requests.get(url + "traffic_light_groups").json()
         return cls.instance
 
     def get_emergency(self):
@@ -49,12 +51,16 @@ class Computation:
 
     def set_just_pressed_button(self, traffic_light, pressed):
         self._just_pressed_button[traffic_light] = pressed
+        if pressed:
+            self._estimation_time[traffic_light] = self._crossing_time_pedestrian
+        else:
+            self._estimation_time[traffic_light] = 0
 
     def get_just_pressed_button(self, traffic_light):
-        return self._just_pressed_button[traffic_light]
-
-    def set_estimation_time_pedestrian(self, traffic_light):
-        self._estimation_time[traffic_light] = self._crossing_time_pedestrian
+        if traffic_light in self._just_pressed_button:
+            return self._just_pressed_button[traffic_light]
+        else:
+            return False
 
     def set_crossing_time(self, new_val):
         if new_val:
@@ -85,17 +91,21 @@ class Computation:
         time_green = self._estimation_time[traffic_light]
         return traffic_light, time_green
 
-    def group_to_light_up(self, traffic_light, green_time):
-        groups = requests.get(url + "traffic_light_groups").json()
+    def group_to_light_up(self, traffic_light, green_time, client):
         group = ""
-        for g in groups:
-            if traffic_light in groups[g]:
+        client.publish("prova", traffic_light)
+        for g in self._groups:
+            client.publish("prova/1", "daje1")
+            if traffic_light in self._groups[g]: # problema !!!!!!!!!!!!!!!!!!!!!!
+                client.publish("prova/2", "daje2")
                 group = g
-                for tl in groups[g]:
+                for tl in self._groups[g]:
+                    client.publish("prova/3", "daje3")
                     self._last_green_time[tl] = time.time() + green_time
                     if tl in self._just_pressed_button:
-                        self._just_pressed_button[tl] = False
+                        self.set_just_pressed_button(tl, False)
                 break
+        client.publish("prova/4", group)
         return group
 
     def check_count(self):
@@ -109,13 +119,36 @@ class Computation:
         self._count += 1
 
     def get_max(self):
-        max_time = 0
+        max_time = -1
         traffic_light = ""
         for i in self._estimation_time:
             if self._estimation_time[i] > max_time:
                 traffic_light = i
                 max_time = self._estimation_time[i]
         return traffic_light, max_time
+
+
+    def get_max_time_group(self, traffic_light):
+        max_green = -1
+        group = ""
+        for g in self._groups:
+            if traffic_light in self._groups[g]:
+                group = g
+                break
+        for tl in self._groups[group]:
+            if max_green < self._estimation_time[tl]:
+                max_green = self._estimation_time[tl]
+        return max_green
+
+    def clear_starvation_group(self, traffic_light):
+        group = ""
+        for g in self._groups:
+            if traffic_light in self._groups[g]:
+                group = g
+                break
+        for tl in self._groups[group]:
+            if tl in self._starvation_queue:
+                self._starvation_queue.remove(tl)
 
     def compute_green_time(self, identifier, number_vehicles):
         # (n_v // n_c +1)* t_m
