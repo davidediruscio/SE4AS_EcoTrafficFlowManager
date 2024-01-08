@@ -30,6 +30,7 @@ services:
     depends_on:
       - mosquitto_module
       - configuration_module
+      - analyzer_module
       - seas_influxdb
 
   analyzer_module:
@@ -46,6 +47,7 @@ services:
     depends_on:
       - mosquitto_module
       - configuration_module
+      - planner1_module
       - seas_influxdb
 
   planner1_module:
@@ -62,6 +64,7 @@ services:
     depends_on:
       - mosquitto_module
       - configuration_module
+      - executor
       - seas_influxdb
 
   planner2_module:
@@ -104,9 +107,10 @@ services:
     expose:
       - 8130
     depends_on:
+      - seas_influxdb
       - mosquitto_module
       - configuration_module
-      - seas_influxdb
+      - monitor_module
 
   configuration_module:
     image: se4as/configuration_module

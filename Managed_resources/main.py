@@ -9,10 +9,15 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("action/+")
 
 
-def change_status_msg(client, userdata, msg):
+def tl_change_status_msg(client, userdata, msg):
     identifier = msg.topic.split("/")[2]
     traffic_light = CrossRoad().get_traffic_light(identifier)
     traffic_light.set_light_status(msg.payload.decode())
+
+def change_signal_msg(client, userdata, msg):
+    identifier = int(msg.topic.split("/")[2])
+    traffic_switcher = CrossRoad().get_traffic_switcher(identifier)
+    traffic_switcher.set_signal_status(eval(msg.payload.decode()))
 
 
 def take_photo_msg(client, userdata, msg):
@@ -29,7 +34,8 @@ if __name__ == "__main__":
     client.connect("mosquitto_module", 1883, 60)
     client.on_connect = on_connect
     client.message_callback_add("action/take_photo", take_photo_msg)
-    client.message_callback_add("action/traffic_light/+", change_status_msg)
+    client.message_callback_add("action/traffic_light/+", tl_change_status_msg)
+    client.message_callback_add("action/traffic_switcher/+", change_signal_msg)
     time.sleep(15)
     take_photo_msg(client, None, None)
 

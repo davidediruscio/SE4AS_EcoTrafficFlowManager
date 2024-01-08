@@ -3,6 +3,7 @@ from Sensors.HumiditySensor import HumiditySensor
 from Sensors.Button import Button
 from Sensors.Camera import Camera
 from TrafficLight import TrafficLight
+from TrafficSwitcher import TrafficSwitcher
 import requests
 
 host = "configuration_module"
@@ -14,6 +15,7 @@ class CrossRoad:
     _vehicles_traffic_lights: dict
     _pedestrian_traffic_lights: dict
     _traffic_lights: dict
+    _traffic_switchers: dict
     _humidity_sensor: HumiditySensor
     _sound_sensor: SoundSensor
 
@@ -23,10 +25,14 @@ class CrossRoad:
             cls.instance._vehicles_traffic_lights = {}
             cls.instance._pedestrian_traffic_lights = {}
             cls.instance._traffic_lights = {}
+            cls.instance._traffic_switchers = {}
             i = 1
             yellow_time = requests.get(url + "data/yellow_time").json()["data"]
+            associated_tl = requests.get(url + "traffic_switchers/tl_associated").json()
             while i <= requests.get(url + "number_traffic_light/vehicles").json()["data"]:
                 traffic_light = TrafficLight(i, yellow_time)
+                if i in associated_tl:
+                    cls.instance._traffic_switchers[i] = TrafficSwitcher(traffic_light)
                 cls.instance._vehicles_traffic_lights[traffic_light] = Camera(traffic_light)
                 cls.instance._traffic_lights[i] = traffic_light
                 i += 1
@@ -56,3 +62,6 @@ class CrossRoad:
 
     def get_traffic_light(self, id):
         return self._traffic_lights[id]
+
+    def get_traffic_switcher(self, id):
+        return self._traffic_switchers[id]

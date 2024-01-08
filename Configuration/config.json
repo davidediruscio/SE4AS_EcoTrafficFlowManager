@@ -24,5 +24,8 @@
       "group1": [1,3],
       "group2": [2,4]
     }
+  },
+  "traffic_switchers": {
+     "tl_associated" : [2,3]
   }
 }

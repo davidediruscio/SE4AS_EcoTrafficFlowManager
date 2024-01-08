@@ -83,6 +83,7 @@ class Computation:
             if pressed_time >= red_threshold and self._just_pressed_button[tl] and tl not in self._starvation_queue:
                 self._starvation_queue.append(tl)
 
+
     def is_starvation_queue_empty(self):
         return len(self._starvation_queue) == 0
 
@@ -93,19 +94,14 @@ class Computation:
 
     def group_to_light_up(self, traffic_light, green_time, client):
         group = ""
-        client.publish("prova", traffic_light)
         for g in self._groups:
-            client.publish("prova/1", "daje1")
-            if traffic_light in self._groups[g]: # problema !!!!!!!!!!!!!!!!!!!!!!
-                client.publish("prova/2", "daje2")
+            if int(traffic_light) in self._groups[g]: # problema !!!!!!!!!!!!!!!!!!!!!!
                 group = g
                 for tl in self._groups[g]:
-                    client.publish("prova/3", "daje3")
                     self._last_green_time[tl] = time.time() + green_time
-                    if tl in self._just_pressed_button:
+                    if int(tl) in self._just_pressed_button:
                         self.set_just_pressed_button(tl, False)
                 break
-        client.publish("prova/4", group)
         return group
 
     def check_count(self):

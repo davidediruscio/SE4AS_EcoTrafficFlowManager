@@ -28,7 +28,6 @@ def emergency_msg(client, userdata, msg):
 def choose_group_to_turn_up(client):
     traffic_light, green_time = -1, 0  # variable inizialization
     Computation().fill_starvation_queue()
-    client.publish("prova/101", traffic_light)
     if Computation().is_starvation_queue_empty():  # non ci sono semafori in starvation
         traffic_light, green_time = Computation().get_max()
     else:
@@ -40,14 +39,13 @@ def choose_group_to_turn_up(client):
                 break
         if green_time == 0:  # tutti i semafori in starvation hanno 0 veicoli
             traffic_light, green_time = Computation().get_max()
-    client.publish("prova/100", traffic_light)
     group = Computation().group_to_light_up(traffic_light, green_time, client)
     client.publish(f"plan/traffic_light_group/{group}", green_time)
 
 
 def pressed_button_msg(client, userdata, msg):
     pressed = eval(msg.payload.decode())
-    identifier = msg.topic.split("/")[3]
+    identifier = int(msg.topic.split("/")[3])
     if pressed and not Computation().get_just_pressed_button(identifier):
         Computation().set_just_pressed_button(identifier, True)
     elif not pressed and not Computation().get_just_pressed_button(identifier):
