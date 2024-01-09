@@ -15,7 +15,6 @@ class CrossRoad:
     _vehicles_traffic_lights: dict
     _pedestrian_traffic_lights: dict
     _traffic_lights: dict
-    _traffic_switchers: dict
     _humidity_sensor: HumiditySensor
     _sound_sensor: SoundSensor
 
@@ -28,11 +27,8 @@ class CrossRoad:
             cls.instance._traffic_switchers = {}
             i = 1
             yellow_time = requests.get(url + "data/yellow_time").json()["data"]
-            associated_tl = requests.get(url + "traffic_switchers/tl_associated").json()
             while i <= requests.get(url + "number_traffic_light/vehicles").json()["data"]:
                 traffic_light = TrafficLight(i, yellow_time)
-                if i in associated_tl:
-                    cls.instance._traffic_switchers[i] = TrafficSwitcher(traffic_light)
                 cls.instance._vehicles_traffic_lights[traffic_light] = Camera(traffic_light)
                 cls.instance._traffic_lights[i] = traffic_light
                 i += 1

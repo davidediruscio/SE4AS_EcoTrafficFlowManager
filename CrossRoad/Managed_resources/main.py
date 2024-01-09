@@ -14,11 +14,6 @@ def tl_change_status_msg(client, userdata, msg):
     traffic_light = CrossRoad().get_traffic_light(identifier)
     traffic_light.set_light_status(msg.payload.decode())
 
-def change_signal_msg(client, userdata, msg):
-    identifier = int(msg.topic.split("/")[2])
-    traffic_switcher = CrossRoad().get_traffic_switcher(identifier)
-    traffic_switcher.set_signal_status(eval(msg.payload.decode()))
-
 
 def take_photo_msg(client, userdata, msg):
     for _, camera in CrossRoad().get_vehicles_traffic_lights().items():
@@ -35,17 +30,12 @@ if __name__ == "__main__":
     client.on_connect = on_connect
     client.message_callback_add("action/take_photo", take_photo_msg)
     client.message_callback_add("action/traffic_light/+", tl_change_status_msg)
-    client.message_callback_add("action/traffic_switcher/+", change_signal_msg)
     time.sleep(15)
     take_photo_msg(client, None, None)
 
     client.loop_start()
     while True:
-        a = 1
-    """
-        while True:
         CrossRoad().get_humidity_sensor().simulate(client)
         CrossRoad().get_sound_sensor().simulate(client)
         sleep(10)
-    """
 

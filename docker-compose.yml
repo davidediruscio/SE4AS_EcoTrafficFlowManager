@@ -18,7 +18,7 @@ services:
   monitor_module:
 
     image: se4as/monitor
-    build: ./Monitor
+    build: CrossRoad/Monitor
     container_name: se4as-monitor_module
     hostname: monitor_module
     ports:
@@ -34,8 +34,8 @@ services:
       - seas_influxdb
 
   analyzer_module:
-    image: se4as-analyzer_image
-    build: ./Analyzer
+    image: se4as/analyzer
+    build: CrossRoad/Analyzer
     container_name: se4as-analyzer_module
     hostname: analyzer_module
     ports:
@@ -50,9 +50,26 @@ services:
       - planner1_module
       - seas_influxdb
 
+  analyzer2_module:
+    image: se4as/analyzer2
+    build: TrafficSwitcher/Analyzer_2
+    container_name: se4as-analyzer_module2
+    hostname: analyzer_module2
+    ports:
+      - "8150:8080"
+    expose:
+      - 8150
+    environment:
+      - TZ=Europe/Rome
+    depends_on:
+      - mosquitto_module
+      - configuration_module
+      - planner2_module
+      - seas_influxdb
+
   planner1_module:
     image: se4as/planner1
-    build: ./Planner_1
+    build: CrossRoad/Planner_1
     container_name: se4as-planner1_module
     hostname: planner1_module
     ports:
@@ -69,7 +86,7 @@ services:
 
   planner2_module:
     image: se4as/planner2
-    build: ./Planner_2
+    build: TrafficSwitcher/Planner_2
     container_name: se4as-planner2_module
     hostname: planner2_module
     ports:
@@ -85,7 +102,7 @@ services:
 
   executor:
     image: se4as/executor
-    build: ./Executor
+    build: CrossRoad/Executor
     container_name: se4as-executor_module
     hostname: executor_module
     ports:
@@ -99,7 +116,7 @@ services:
 
   managed_resources:
     image: se4as/managed_resources
-    build: ./Managed_resources
+    build: CrossRoad/Managed_resources
     container_name: se4as-managed_resources_module
     hostname: managed_resources_module
     ports:
@@ -114,13 +131,26 @@ services:
 
   configuration_module:
     image: se4as/configuration_module
-    build: ./Configuration
+    build: CrossRoad/Configuration
     container_name: se4as-configuration_module
     hostname: configuration_module
     ports:
       - "8140:8080"
     expose:
       - 8140
+    depends_on:
+      - mosquitto_module
+
+
+  configuration_module2:
+    image: se4as/configuration_module2
+    build: TrafficSwitcher/Configuration_2
+    container_name: se4as-configuration_module2
+    hostname: configuration_module2
+    ports:
+      - "8160:8080"
+    expose:
+      - 8160
     depends_on:
       - mosquitto_module
 

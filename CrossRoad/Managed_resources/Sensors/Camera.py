@@ -7,15 +7,21 @@ from paho.mqtt.client import Client
 class Camera:
 
     _id: int
+    _number_car: int
 
     def __init__(self, traffic_light):
         self._id = traffic_light.get_id()
+        self._number_car = random.randint(0, 10)
 
-    @staticmethod
-    def get_photo():
-        #numbers_car = random.randint(0, 15)
-        numbers_car = 0
-        name_photo = f"./Images/img_{numbers_car}car.jpeg"
+
+    def get_photo(self):
+        #numbers_car =
+        self._number_car = self._number_car + random.randint(-3, 4)
+        if self._number_car < 0:
+            self._number_car = 0
+        elif self._number_car > 15:
+            self._number_car = 15
+        name_photo = f"./Images/img_{self._number_car}car.jpeg"
         f = open(name_photo, "rb")
         photo_content = f.read()
         f.close()

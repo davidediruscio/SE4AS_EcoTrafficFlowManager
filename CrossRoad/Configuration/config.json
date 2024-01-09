@@ -1,5 +1,6 @@
 {
   "data": {
+    "cross_road_id": "A",
     "number_road_lines": 2,
     "humidity_threshold": 0.8,
     "yellow_time": 3,
@@ -24,8 +25,5 @@
       "group1": [1,3],
       "group2": [2,4]
     }
-  },
-  "traffic_switchers": {
-     "tl_associated" : [2,3]
   }
 }

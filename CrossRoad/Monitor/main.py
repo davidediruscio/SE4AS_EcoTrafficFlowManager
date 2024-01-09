@@ -1,16 +1,15 @@
-#from db_storing import db_storing
+from DbManager import DbManager
 import paho.mqtt.client as mqtt
 
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe("sensors/#")
 
-
 def on_message(client, userdata, msg):
     payload = msg.payload.decode()
+    DbManager().store_data_from_topic(str(msg.topic), payload)
     topic = msg.topic.replace("sensors/", "monitor/")
     client.publish(topic, payload)
-    #db_storing.dbWrite(str(msg.topic), payload)
 
 
 if __name__ == '__main__':

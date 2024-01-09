@@ -16,7 +16,7 @@ services:
 
   configuration_module:
     image: se4as/configuration_module
-    build: ../Configuration
+    build: ../CrossRoad/Configuration
     container_name: se4as-configuration_module
     hostname: configuration_module
     ports:
@@ -29,7 +29,7 @@ services:
 
   managed_resources:
     image: se4as/managed_resources
-    build: ../Managed_resources
+    build: ../CrossRoad/Managed_resources
     container_name: se4as-managed_resources_module
     hostname: managed_resources_module
     ports:
@@ -45,7 +45,7 @@ services:
   monitor_module:
 
     image: se4as/monitor
-    build: ../Monitor
+    build: ../CrossRoad/Monitor
     container_name: se4as-monitor_module
     hostname: monitor_module
     ports:
@@ -61,7 +61,7 @@ services:
 
   analyzer_module:
     image: se4as-analyzer_image
-    build: ../Analyzer
+    build: ../CrossRoad/Analyzer
     container_name: se4as-analyzer_module
     hostname: analyzer_module
     ports:
@@ -77,7 +77,7 @@ services:
 
   planner1_module:
     image: se4as/planner1
-    build: ../Planner_1
+    build: ../CrossRoad/Planner_1
     container_name: se4as-planner1_module
     hostname: planner1_module
     ports:
@@ -94,7 +94,7 @@ services:
 
   executor:
     image: se4as/executor
-    build: ../Executor
+    build: ../CrossRoad/Executor
     container_name: se4as-executor_module
     hostname: executor_module
     ports:

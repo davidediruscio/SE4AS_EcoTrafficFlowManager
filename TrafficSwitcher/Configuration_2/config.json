@@ -1,0 +1,17 @@
+{
+  "data": {
+    "turn_on_time": 180,
+    "analysis_time": 60
+  },
+  "traffic_switcher_groups": {
+    "switcher1": {
+      "A": [1]
+    },
+    "switcher2": {
+      "A": [2,3]
+    },
+    "switcher3": {
+      "A": [4]
+    }
+  }
+}

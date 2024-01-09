@@ -1,6 +1,7 @@
 import paho.mqtt.client as mqtt
 import time
 import requests
+from DbManager import DbManager
 
 host = "configuration_module"
 #host = "localhost"
@@ -51,6 +52,7 @@ class Computation:
 
     def set_just_pressed_button(self, traffic_light, pressed):
         self._just_pressed_button[traffic_light] = pressed
+        DbManager().store_button_pressed(pressed, traffic_light)
         if pressed:
             self._estimation_time[traffic_light] = self._crossing_time_pedestrian
         else:
