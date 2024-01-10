@@ -3,6 +3,7 @@ import time
 from CrossRoad import CrossRoad
 import paho.mqtt.client as mqtt
 from time import sleep
+from DbManager import DbManager
 
 
 def on_connect(client, userdata, flags, rc):
@@ -13,6 +14,12 @@ def tl_change_status_msg(client, userdata, msg):
     identifier = msg.topic.split("/")[2]
     traffic_light = CrossRoad().get_traffic_light(identifier)
     traffic_light.set_light_status(msg.payload.decode())
+
+def ts_change_status_msg(client, userdata, msg):
+    splitted_topic = msg.topic.split("/")
+    traffic_switcher_id = splitted_topic[3]
+    DbManager().store_data_tag(traffic_switcher_id, "on", msg.payload)
+
 
 
 def take_photo_msg(client, userdata, msg):
@@ -30,6 +37,7 @@ if __name__ == "__main__":
     client.on_connect = on_connect
     client.message_callback_add("action/take_photo", take_photo_msg)
     client.message_callback_add("action/traffic_light/+", tl_change_status_msg)
+    client.message_callback_add("action/traffic_switcher/+", ts_change_status_msg)
     time.sleep(15)
     take_photo_msg(client, None, None)
 

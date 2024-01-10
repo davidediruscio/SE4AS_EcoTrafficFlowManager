@@ -7,7 +7,7 @@ services:
     container_name: se4as-mosquitto_module
     hostname: mosquitto_module
     volumes:
-      - ./mosquitto:/mosquitto
+      - ./CrossRoad/mosquitto:/mosquitto
     ports:
       - "1883:1883"
       - "9001:9001"

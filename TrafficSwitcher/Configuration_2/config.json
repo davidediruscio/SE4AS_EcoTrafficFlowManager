@@ -1,7 +1,7 @@
 {
   "data": {
     "turn_on_time": 180,
-    "analysis_time": 60
+    "analysis_time": 120
   },
   "traffic_switcher_groups": {
     "switcher1": {
