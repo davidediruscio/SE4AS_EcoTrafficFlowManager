@@ -4,6 +4,7 @@
 # se il flusso è nagativo e switcher spento allora accendi in base a predizione
 # ogni n tempo faccio predizione e aggiorno in ogni caso il tempo di accenzione
 import paho.mqtt.client as mqtt
+from Computation import Computation
 
 
 def on_connect(client, userdata, flags, rc):
@@ -17,8 +18,14 @@ def flux_mean_msg(client, userdata, msg):
     splitted_topic = msg.topic.split("/")
     cross_road_id = splitted_topic[3]
     tl_id = splitted_topic[4]
+    switcher_id = Computation().get_switcher(cross_road_id, tl_id)
     if payload > 0:
-        client.publish(topic, payload)
+        Computation().set_status(switcher_id, True)
+        client.publish(f"action/traffic_switcher/{switcher_id}", "True")
+    elif Computation().check_status(switcher_id):
+        Computation().set_status(switcher_id, False)
+        client.publish(f"action/traffic_switcher/{switcher_id}", "False")
+
 
 
 if __name__ == '__main__':

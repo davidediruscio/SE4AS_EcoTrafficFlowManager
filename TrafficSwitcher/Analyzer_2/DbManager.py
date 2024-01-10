@@ -16,11 +16,13 @@ class DbManager:
     _host = "localhost"  # "knowledge_module"
     _url = "http://localhost:8086"
     _analysis_time: int
+    _prediction_time: int
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(DbManager, cls).__new__(cls)
             cls.instance._analysis_time = requests.get(url + "data/analysis_time").json()["data"]
+            cls.instance._prediction_time = requests.get(url + "data/prediction_time").json()["data"]
             cls.instance._token = "seasinfluxdbtoken"
             cls.instance._client = influxdb_client.InfluxDBClient(url=cls.instance._url, token=cls.instance._token,
                                                                   org=cls.instance._org)
@@ -54,6 +56,19 @@ class DbManager:
         tables = query_api.query(query, org="univaq")
         print(tables.to_json())
         return json.loads(tables.to_json())
+
+    def get_flux_mean(self, cross_road_id, traffic_light_id):
+        query_api = self._client.query_api()
+        query = f'from(bucket: "seas")' \
+                f'|> range(start: -{self._prediction_time}s)' \
+                '|> filter(fn: (r) => r["_measurement"] == "flux")' \
+                '|> filter(fn: (r) => r["_field"] == "mean")' \
+                f'|> filter(fn: (r) => r["cross_road"] == "{cross_road_id}")' \
+                f'|> filter(fn: (r) => r["tl_id"] == "{str(traffic_light_id)}")'
+        tables = query_api.query(query, org="univaq")
+        print(tables.to_json())
+        return json.loads(tables.to_json())
+
 
     def store_fluxes_means(self, fluxes_means):
         for key, value in fluxes_means.items():
