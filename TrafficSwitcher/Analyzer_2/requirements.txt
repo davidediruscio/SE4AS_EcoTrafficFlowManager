@@ -3,3 +3,5 @@ influxdb-client
 requests
 numpy
 scikit-learn
+schedule
+pandas

@@ -2,7 +2,8 @@
   "data": {
     "turn_on_time": 180,
     "analysis_time": 120,
-    "prediction_time": 7200
+    "prediction_time": 120,
+    "early_turn_on_time": 300
   },
   "traffic_switcher_groups": {
     "switcher1": {

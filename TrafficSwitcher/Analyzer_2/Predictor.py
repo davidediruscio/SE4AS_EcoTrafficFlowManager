@@ -1,15 +1,13 @@
-import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
+import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from datetime import datetime, timezone
+from sklearn.tree import DecisionTreeRegressor
+from datetime import datetime, timedelta
 from DbManager import DbManager
-from sklearn.metrics import accuracy_score, confusion_matrix
+import time
 
 
 class Predictor:
-
     _models: dict
 
     def __new__(cls):
@@ -17,29 +15,43 @@ class Predictor:
             cls.instance = super(Predictor, cls).__new__(cls)
         return cls.instance
 
-    def convert_to_time_stemp(self, timestamp_str):
-        timestamp = datetime.fromisoformat(timestamp_str).replace(tzinfo=timezone.utc).timestamp()
-        return timestamp
+    def convert_to_datetime(self, timestamp_str):
+        date_time = datetime.fromisoformat(timestamp_str)
+        return date_time
 
-    def fit(self, cross_road, tl_id):
-        np.random.seed(42)
+    def preprocessing(self, cross_road, tl_id):
         date_array, flux_array = self.get_date_flux_array(cross_road, tl_id)
         dataset = pd.DataFrame({
-            'Date': date_array,
+            'DateTime': date_array,
             'Flux': flux_array
         })
+        dataset['WeekDay'] = dataset['DateTime'].dt.dayofweek
         dataset['Target'] = dataset['Flux'] > 0
-        model = LogisticRegression()
-        model.fit(dataset['Date'], dataset['Target'])
+        dataset['Hour'] = dataset['DateTime'].dt.hour
+        dataset['Minutes'] = dataset['DateTime'].dt.minute
+        X = dataset[['Hour', 'Minutes', 'WeekDay']]
+        Y = dataset['Flux']
+        return X, Y
+
+    def fit(self, cross_road, tl_id):
+        X, Y = self.preprocessing(cross_road, tl_id)
+        np.random.seed(42)
+        model = DecisionTreeRegressor()
+        model.fit(X, Y)
         self._models[(cross_road, tl_id)] = model
 
     def get_date_flux_array(self, cross_road, tl_id):
         data_db = DbManager().get_flux_mean(cross_road, tl_id)
         flux = [data_db[i]["_value"] for i in range(len(data_db))]
-        date = [data_db[i]["_time"] for i in range(len(data_db))]
+        date = [self.convert_to_datetime(data_db[i]["_time"]) for i in range(len(data_db))]
         return date, flux
 
-
-
-    def predict(self, date, cross_road, tl_id):
-        return self._models[(cross_road, tl_id)].predict([date])
+    def predict(self, next_times, cross_road, tl_id):
+        prediction_time = [datetime.fromtimestamp(time.time() + next_time) for next_time in next_times]
+        prediction = self._models[(cross_road, tl_id)].predict([prediction_time])
+        i = 0
+        for pred in prediction:
+            if pred > 0:
+                return prediction_time[i]
+            i += 1
+        return 0

@@ -5,7 +5,7 @@ import re
 from influxdb_client.client.write_api import SYNCHRONOUS
 import json
 
-host = "configuration_module"
+host = "configuration_module2"
 #host = "localhost"
 url = f"http://{host}:5008/config/"
 
@@ -13,8 +13,8 @@ url = f"http://{host}:5008/config/"
 class DbManager:
     _token: str
     _org = "univaq"
-    _host = "localhost"  # "knowledge_module"
-    _url = "http://localhost:8086"
+    _host = "seas_influxdb"  # "knowledge_module"
+    _url = "http://seas_influxdb:8086"
     _analysis_time: int
     _prediction_time: int
 
@@ -22,7 +22,7 @@ class DbManager:
         if not hasattr(cls, 'instance'):
             cls.instance = super(DbManager, cls).__new__(cls)
             cls.instance._analysis_time = requests.get(url + "data/analysis_time").json()["data"]
-            cls.instance._prediction_time = requests.get(url + "data/prediction_time").json()["data"]
+            #cls.instance._analysis_time = requests.get(url + "data/prediction_interval_data").json()["data"]
             cls.instance._token = "seasinfluxdbtoken"
             cls.instance._client = influxdb_client.InfluxDBClient(url=cls.instance._url, token=cls.instance._token,
                                                                   org=cls.instance._org)
@@ -30,9 +30,8 @@ class DbManager:
 
     def store_data_tag(self, measurement: str, field: str, value, tag_name_value=None):
         bucket = "seas"
-
         write_api = self._client.write_api(write_options=SYNCHRONOUS)
-        data = Point(measurement).tag("cross_road", self._cross_road_id)
+        data = Point(measurement)
         if tag_name_value != None:
             for tag_name, tag_value in tag_name_value.items():
                 data = data.tag(tag_name, tag_value)
@@ -41,9 +40,6 @@ class DbManager:
             data.field(field, value)
         )
         write_api.write(bucket=bucket, org="univaq", record=point)
-
-    def get_cross_road_id(self):
-        return self._cross_road_id
 
     def get_flux_traffic_light(self, cross_road_id, traffic_light_id):
         query_api = self._client.query_api()
@@ -60,7 +56,7 @@ class DbManager:
     def get_flux_mean(self, cross_road_id, traffic_light_id):
         query_api = self._client.query_api()
         query = f'from(bucket: "seas")' \
-                f'|> range(start: -{self._prediction_time}s)' \
+                '| > range(start: -7d)'\
                 '|> filter(fn: (r) => r["_measurement"] == "flux")' \
                 '|> filter(fn: (r) => r["_field"] == "mean")' \
                 f'|> filter(fn: (r) => r["cross_road"] == "{cross_road_id}")' \

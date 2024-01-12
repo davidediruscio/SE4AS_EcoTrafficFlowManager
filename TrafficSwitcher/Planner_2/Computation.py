@@ -1,14 +1,14 @@
 import requests
-import numpy as np
 import time
 
-#host = "configuration_module"
-host = "localhost"
+host = "configuration_module2"
+#host = "localhost"
 url = f"http://{host}:5008/config/"
 
 class Computation:
 
-    _prediction: int
+    _prediction: dict
+    _early_turn_on_time: int
     _traffic_switcher_groups: dict
     _traffic_switcher_status: dict
     _traffic_switcher_turn_on_time: dict
@@ -20,8 +20,10 @@ class Computation:
             cls.instance = super(Computation, cls).__new__(cls)
             cls.instance._traffic_switcher_groups = requests.get(url + "traffic_switcher_groups").json()
             cls.instance._turn_on_time = requests.get(url + "data/turn_on_time").json()["data"]
+            cls.instance._early_turn_on_time = requests.get(url + "data/early_turn_on_time").json()["data"]
             cls.instance._traffic_switcher_status = {switcher: False for switcher, _ in cls.instance._traffic_switcher_groups.items()}
             cls.instance._traffic_switcher_turn_on_time = {switcher: -1 for switcher, _ in cls.instance._traffic_switcher_groups.items()}
+            cls.instance._prediction = {}
         return cls.instance
 
 
@@ -40,6 +42,15 @@ class Computation:
         self._traffic_switcher_status[traffic_switcher_id] = status
         if status:
             self._traffic_switcher_turn_on_time[traffic_switcher_id] = time.time()
+
+    def set_prediction(self, traffic_switcher_id, prediction_time):
+        self._prediction[traffic_switcher_id] = prediction_time
+
+    def get_predictions(self):
+        return self._prediction
+
+    def get_early_turn_on_time(self):
+        return self._early_turn_on_time
 
 
 
