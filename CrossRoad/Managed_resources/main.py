@@ -17,7 +17,7 @@ def tl_change_status_msg(client, userdata, msg):
 
 def ts_change_status_msg(client, userdata, msg):
     splitted_topic = msg.topic.split("/")
-    traffic_switcher_id = splitted_topic[3]
+    traffic_switcher_id = splitted_topic[2]
     DbManager().store_data_tag(traffic_switcher_id, "on", msg.payload)
 
 

@@ -16,6 +16,8 @@ def flux_prediction_msg(client, userdata, msg):
     payload = eval(msg.payload.decode())
     splitted_topic = msg.topic.split("/")
     switcher_id = splitted_topic[3]
+    while Computation().get_busy():
+        pass
     Computation().set_prediction(switcher_id, payload)
 
 def flux_mean_msg(client, userdata, msg):
@@ -23,7 +25,8 @@ def flux_mean_msg(client, userdata, msg):
     splitted_topic = msg.topic.split("/")
     cross_road_id = splitted_topic[3]
     tl_id = splitted_topic[4]
-    print(cross_road_id, tl_id)
+    client.publish("prova/flux_mean_msg", msg.topic)
+    print(msg.topic)
     switcher_identifier = Computation().get_switcher(cross_road_id, tl_id)
     if payload > 0:
         Computation().set_status(switcher_identifier, True)
@@ -43,7 +46,10 @@ if __name__ == '__main__':
     client.message_callback_add("traffic_switcher/analysis/flux_prediction/#", flux_prediction_msg)
     client.loop_start()
     while True:
+        Computation().set_busy(True)
         for switcher_id, prediction in Computation().get_predictions().items():
             if prediction - time.time() < Computation().get_early_turn_on_time():
                 Computation().set_status(switcher_id, True)
                 client.publish(f"action/traffic_switcher/{switcher_id}", "True")
+        Computation().set_busy(False)
+        time.sleep(5)

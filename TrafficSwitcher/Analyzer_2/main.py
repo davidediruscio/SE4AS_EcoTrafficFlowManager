@@ -31,7 +31,7 @@ def analysis(client):
 def prediction(client):
     Computation().fittings_models()
     now = time()
-    Computation().predicts([now + i * 300 for i in range(1, 12)], client)
+    Computation().predicts([now + (i * 300) for i in range(1, 12)], client)
 
 
 def on_connect(client, userdata, flags, rc):

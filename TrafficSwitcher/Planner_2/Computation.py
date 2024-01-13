@@ -13,6 +13,7 @@ class Computation:
     _traffic_switcher_status: dict
     _traffic_switcher_turn_on_time: dict
     _turn_on_time: int
+    _busy: bool
 
 
     def __new__(cls):
@@ -24,13 +25,14 @@ class Computation:
             cls.instance._traffic_switcher_status = {switcher: False for switcher, _ in cls.instance._traffic_switcher_groups.items()}
             cls.instance._traffic_switcher_turn_on_time = {switcher: -1 for switcher, _ in cls.instance._traffic_switcher_groups.items()}
             cls.instance._prediction = {}
+            cls.instance._busy = False
         return cls.instance
 
 
     def get_switcher(self,cross_road, tl_id):
         for switcher, crossRoad_dict in self._traffic_switcher_groups.items():
             for crossRoad, traffic_lights in crossRoad_dict.items():
-                if tl_id in traffic_lights and cross_road == crossRoad:
+                if int(tl_id) in traffic_lights and cross_road == crossRoad:
                     return switcher
         raise ValueError("the traffic_light do not exist")
 
@@ -51,6 +53,12 @@ class Computation:
 
     def get_early_turn_on_time(self):
         return self._early_turn_on_time
+
+    def get_busy(self):
+        return self._busy
+
+    def set_busy(self, busy):
+        self._busy = busy
 
 
 

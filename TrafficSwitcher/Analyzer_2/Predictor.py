@@ -36,8 +36,6 @@ class Predictor:
 
     def fit(self, cross_road, tl_id):
         X, Y = self.preprocessing(cross_road, tl_id)
-        print("fit")
-        print(X)
         np.random.seed(42)
         model = DecisionTreeRegressor()
         model.fit(X, Y)
@@ -56,21 +54,18 @@ class Predictor:
         dataset['Hour'] = dataset['DateTime'].dt.hour
         dataset['Minutes'] = dataset['DateTime'].dt.minute
         dataset['WeekDay'] = dataset['DateTime'].dt.dayofweek
-        print("prepare")
-        print(dataset)
         return dataset[['Hour', 'Minutes', 'WeekDay']]
 
 
 
     def predict(self, next_times, cross_road, tl_id):
-        prediction_time = [datetime.fromtimestamp(time.time() + next_time) for next_time in next_times]
-        prediction_time = self.prepare_data_to_predict(prediction_time)
-        print("predict")
-        print(prediction_time)
-        prediction = self._models[(cross_road, tl_id)].predict([prediction_time])
-        i = 0
-        for pred in prediction:
-            if pred > 0:
-                return prediction_time[i]
-            i += 1
-        return 0
+        prediction_time = [datetime.fromtimestamp(next_time) for next_time in next_times]
+        prediction_time_df = self.prepare_data_to_predict(prediction_time)
+        prediction = self._models[(cross_road, tl_id)].predict(prediction_time_df)
+        prediction_time_df['Flux'] = prediction
+        prediction_time_df['Predicted Status'] = prediction_time_df['Flux'] > 0
+        if prediction_time_df['Predicted Status'].any():
+            index = prediction_time_df['Predicted Status'].idxmax()
+            return next_times[index]
+        else:
+            return 0

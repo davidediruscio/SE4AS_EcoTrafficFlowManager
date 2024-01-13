@@ -63,7 +63,7 @@ services:
       - TZ=Europe/Rome
     depends_on:
       - mosquitto_module
-      - configuration_module
+      - configuration_module2
       - planner2_module
       - seas_influxdb
 
@@ -97,7 +97,7 @@ services:
       - TZ=Europe/Rome
     depends_on:
       - mosquitto_module
-      - configuration_module
+      - configuration_module2
       - seas_influxdb
 
   executor:

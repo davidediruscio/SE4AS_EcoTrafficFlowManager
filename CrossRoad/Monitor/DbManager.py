@@ -44,9 +44,9 @@ class DbManager:
             identifier = topic.split("/")[3]
             self.store_data_tag("camera", "img", payload, {"tl_id": int(identifier)})
         elif topic == "sensors/humidity":
-            self.store_data_tag("humidity", "value", payload)
+            self.store_data_tag("humidity", "value", float(payload))
         elif topic == "sensors/sound":
-            self.store_data_tag("sound", "value", payload)
+            self.store_data_tag("sound", "value", float(payload))
 
 
 """

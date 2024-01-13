@@ -48,7 +48,7 @@ class Computation:
                         predicted_time = prediction_i
                     else:
                         predicted_time = np.min([predicted_time, prediction_i])
-            client.publish(f"traffic_switcher/analysis/flux_prediction/{switcher}", predicted_time)
+            client.publish(f"traffic_switcher/analysis/flux_prediction/{switcher}", float(predicted_time))
 
 
 
@@ -63,7 +63,7 @@ class Computation:
                     else:
                         n_vehicles_list = [result_dict[i]["_value"] for i in range(len(result_dict))]
                         flux_list = [n_vehicles_list[i] - n_vehicles_list[i - 1] for i in range(1, len(n_vehicles_list))]
-                        self._flux_means[(crossRoad, traffic_light)] = np.round(np.array(flux_list).mean(), 2)
+                        self._flux_means[(crossRoad, traffic_light)] = np.array(flux_list).mean()
         return self._flux_means
 
 
