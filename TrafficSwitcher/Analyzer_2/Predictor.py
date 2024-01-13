@@ -13,6 +13,7 @@ class Predictor:
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(Predictor, cls).__new__(cls)
+            cls.instance._models = {}
         return cls.instance
 
     def convert_to_datetime(self, timestamp_str):
@@ -35,6 +36,8 @@ class Predictor:
 
     def fit(self, cross_road, tl_id):
         X, Y = self.preprocessing(cross_road, tl_id)
+        print("fit")
+        print(X)
         np.random.seed(42)
         model = DecisionTreeRegressor()
         model.fit(X, Y)
@@ -46,8 +49,24 @@ class Predictor:
         date = [self.convert_to_datetime(data_db[i]["_time"]) for i in range(len(data_db))]
         return date, flux
 
+    def prepare_data_to_predict(self, datetime_array):
+        dataset = pd.DataFrame({
+            'DateTime': datetime_array,
+        })
+        dataset['Hour'] = dataset['DateTime'].dt.hour
+        dataset['Minutes'] = dataset['DateTime'].dt.minute
+        dataset['WeekDay'] = dataset['DateTime'].dt.dayofweek
+        print("prepare")
+        print(dataset)
+        return dataset[['Hour', 'Minutes', 'WeekDay']]
+
+
+
     def predict(self, next_times, cross_road, tl_id):
         prediction_time = [datetime.fromtimestamp(time.time() + next_time) for next_time in next_times]
+        prediction_time = self.prepare_data_to_predict(prediction_time)
+        print("predict")
+        print(prediction_time)
         prediction = self._models[(cross_road, tl_id)].predict([prediction_time])
         i = 0
         for pred in prediction:

@@ -23,13 +23,14 @@ def flux_mean_msg(client, userdata, msg):
     splitted_topic = msg.topic.split("/")
     cross_road_id = splitted_topic[3]
     tl_id = splitted_topic[4]
-    switcher_id = Computation().get_switcher(cross_road_id, tl_id)
+    print(cross_road_id, tl_id)
+    switcher_identifier = Computation().get_switcher(cross_road_id, tl_id)
     if payload > 0:
-        Computation().set_status(switcher_id, True)
-        client.publish(f"action/traffic_switcher/{switcher_id}", "True")
-    elif Computation().check_status(switcher_id):
-        Computation().set_status(switcher_id, False)
-        client.publish(f"action/traffic_switcher/{switcher_id}", "False")
+        Computation().set_status(switcher_identifier, True)
+        client.publish(f"action/traffic_switcher/{switcher_identifier}", "True")
+    elif Computation().check_status(switcher_identifier):
+        Computation().set_status(switcher_identifier, False)
+        client.publish(f"action/traffic_switcher/{switcher_identifier}", "False")
 
 
 
