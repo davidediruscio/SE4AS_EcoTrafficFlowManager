@@ -11,7 +11,9 @@ def group_turn_on_msg(client, userdata, msg):
     group = msg.topic.split("/")[2]
     green_time = eval(msg.payload)
     Computation().set_green_light_to_group(client, group)
-    time.sleep(green_time)
+    now = time.time()
+    while time.time() - now < green_time:
+        pass
     client.publish(f"action/take_photo", True)
 
 
@@ -28,5 +30,5 @@ if __name__ == "__main__":
     client.message_callback_add("plan/traffic_light_group/+", group_turn_on_msg)
     client.message_callback_add("plan/emergency", emergency_msg)
     #client.connect("localhost", 1883, 60)
-    client.connect("mosquitto_module", 1883, 60)
+    client.connect("mosquitto_module", 1883)
     client.loop_forever()

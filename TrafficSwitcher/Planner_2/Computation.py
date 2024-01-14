@@ -1,5 +1,6 @@
 import requests
 import time
+from DbManager import DbManager
 
 host = "configuration_module2"
 #host = "localhost"
@@ -28,6 +29,8 @@ class Computation:
             cls.instance._busy = False
         return cls.instance
 
+    def send_msg_to_switcher(self, traffic_switcher_id,  data):
+        DbManager().store_data_tag(traffic_switcher_id, "on", data)
 
     def get_switcher(self,cross_road, tl_id):
         for switcher, crossRoad_dict in self._traffic_switcher_groups.items():

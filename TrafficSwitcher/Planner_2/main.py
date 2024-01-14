@@ -30,15 +30,15 @@ def flux_mean_msg(client, userdata, msg):
     switcher_identifier = Computation().get_switcher(cross_road_id, tl_id)
     if payload > 0:
         Computation().set_status(switcher_identifier, True)
-        client.publish(f"action/traffic_switcher/{switcher_identifier}", "True")
+        Computation().send_msg_to_switcher(switcher_identifier, "True")
     elif Computation().check_status(switcher_identifier):
         Computation().set_status(switcher_identifier, False)
-        client.publish(f"action/traffic_switcher/{switcher_identifier}", "False")
+        Computation().send_msg_to_switcher(switcher_identifier, "False")
 
 
 
 if __name__ == '__main__':
-    client = mqtt.Client(client_id="MONITOR", reconnect_on_failure=True)
+    client = mqtt.Client(client_id="PLANNER2", reconnect_on_failure=True)
     #client.connect("localhost", 1883)
     client.connect("mosquitto_module", 1883)
     client.on_connect = on_connect

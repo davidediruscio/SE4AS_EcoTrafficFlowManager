@@ -51,5 +51,5 @@ if __name__ == "__main__":
     client.message_callback_add("monitor/humidity", humidity_msg)
     client.message_callback_add("monitor/sound", sound_msg)
     client.message_callback_add("monitor/trafficLight/pedestrian/+", button_msg)
-    client.connect("mosquitto_module", 1883, 60)
+    client.connect("mosquitto_module", 1883)
     client.loop_forever()

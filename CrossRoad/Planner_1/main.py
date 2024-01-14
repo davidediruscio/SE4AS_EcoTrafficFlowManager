@@ -72,5 +72,5 @@ if __name__ == "__main__":
     client.message_callback_add("analysis/trafficLight/emergency", emergency_msg)
     client.message_callback_add("analysis/trafficLight/bad_weather", bad_weather_msg)
     #client.connect("localhost", 1883, 60)
-    client.connect("mosquitto_module", 1883, 60)
+    client.connect("mosquitto_module", 1883)
     client.loop_forever()

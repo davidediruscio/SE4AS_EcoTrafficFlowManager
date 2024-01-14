@@ -71,14 +71,6 @@ def get_groups():
         resp.status_code = 200
     return resp
 
-@app.route("/config/traffic_switchers/<parameter>", methods=["GET"])
-def tl_associated_to_traffic_switchers(parameter):
-    with open('config.json', 'r') as f:
-        data = json.loads(f.read())["traffic_switchers"][parameter]
-        resp = jsonify(data)
-        resp.status_code = 200
-    return resp
-
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5008)

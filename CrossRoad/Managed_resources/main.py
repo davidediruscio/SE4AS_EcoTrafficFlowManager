@@ -33,7 +33,7 @@ if __name__ == "__main__":
     # MQTT client creation
     client = mqtt.Client("Managed_Resources", reconnect_on_failure=True)
     #client.connect("localhost")
-    client.connect("mosquitto_module", 1883, 60)
+    client.connect("mosquitto_module", 1883)
     client.on_connect = on_connect
     client.message_callback_add("action/take_photo", take_photo_msg)
     client.message_callback_add("action/traffic_light/+", tl_change_status_msg)
@@ -47,5 +47,5 @@ if __name__ == "__main__":
     while True:
         CrossRoad().get_humidity_sensor().simulate(client)
         CrossRoad().get_sound_sensor().simulate(client)
-        sleep(120)
+        sleep(60)
 
