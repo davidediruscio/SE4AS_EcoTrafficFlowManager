@@ -6,5 +6,5 @@ COPY config.json .
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-EXPOSE 8150
+EXPOSE 8160
 CMD ["python", "./main.py"]
