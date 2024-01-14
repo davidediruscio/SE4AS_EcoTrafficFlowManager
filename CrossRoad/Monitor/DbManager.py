@@ -42,8 +42,8 @@ class DbManager:
     def store_data_from_topic(self, topic, payload):
         if re.search("^sensors/trafficLight/vehicles/", topic):
             identifier = topic.split("/")[3]
-            self.store_data_tag("camera", "img", payload, {"tl_id": int(identifier)})
-        elif topic == "sensors/humidity":
+            #self.store_data_tag("camera", "img", payload, {"tl_id": int(identifier)})
+        if topic == "sensors/humidity":
             self.store_data_tag("humidity", "value", float(payload))
         elif topic == "sensors/sound":
             self.store_data_tag("sound", "value", float(payload))

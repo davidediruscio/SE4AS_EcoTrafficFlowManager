@@ -23,10 +23,13 @@ def ts_change_status_msg(client, userdata, msg):
 
 
 def take_photo_msg(client, userdata, msg):
+    client.publish("prova/foto", "qui si 0")
     for _, camera in CrossRoad().get_vehicles_traffic_lights().items():
         camera.simulate(client)
+        client.publish("prova/foto", "qui si 1")
     for _, button in CrossRoad().get_pedestrian_traffic_lights().items():
         button.simulate(client)
+        client.publish("prova/foto", "qui si 2")
 
 
 if __name__ == "__main__":
@@ -38,10 +41,15 @@ if __name__ == "__main__":
     client.message_callback_add("action/take_photo", take_photo_msg)
     client.message_callback_add("action/traffic_light/+", tl_change_status_msg)
     client.message_callback_add("action/traffic_switcher/+", ts_change_status_msg)
-    time.sleep(15)
-    take_photo_msg(client, None, None)
-
+    time.sleep(5)
     client.loop_start()
+    client.publish("prova/foto", "qui si 0")
+    for _, camera in CrossRoad().get_vehicles_traffic_lights().items():
+        camera.simulate(client)
+        client.publish("prova/foto", "qui si 1")
+    for _, button in CrossRoad().get_pedestrian_traffic_lights().items():
+        button.simulate(client)
+        client.publish("prova/foto", "qui si 2")
     while True:
         CrossRoad().get_humidity_sensor().simulate(client)
         CrossRoad().get_sound_sensor().simulate(client)

@@ -6,7 +6,10 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("plan/#")
     client.subscribe("analysis/#")
     client.subscribe("action/#")
+    client.subscribe("monitor/#")
     client.subscribe("prova/#")
+    client.subscribe("sensors/#")
+    #client.subscribe("traffic_switcher/#")
 
 def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload.decode()))

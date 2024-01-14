@@ -4,7 +4,7 @@
     "number_road_lines": 2,
     "humidity_threshold": 0.8,
     "yellow_time": 3,
-    "red_threshold": 30,
+    "red_threshold": 60,
     "sound_threshold": 0.8
   },
   "crossing_time":{

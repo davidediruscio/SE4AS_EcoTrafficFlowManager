@@ -16,7 +16,6 @@ services:
 
 
   monitor_module:
-
     image: se4as/monitor
     build: CrossRoad/Monitor
     container_name: se4as-monitor_module
@@ -135,7 +134,7 @@ services:
     container_name: se4as-configuration_module
     hostname: configuration_module
     ports:
-      - "8140:8080"
+      - "8140:5008"
     expose:
       - 8140
     depends_on:
@@ -148,7 +147,7 @@ services:
     container_name: se4as-configuration_module2
     hostname: configuration_module2
     ports:
-      - "8160:8080"
+      - "8160:5008"
     expose:
       - 8160
     depends_on:
@@ -173,4 +172,6 @@ services:
       - 8086
     depends_on:
       - mosquitto_module
+
+
 
