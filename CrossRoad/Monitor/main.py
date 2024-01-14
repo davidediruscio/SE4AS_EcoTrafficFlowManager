@@ -8,9 +8,7 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     payload = msg.payload.decode()
-    client.publish("prova/monitor/000000000000000000000000000", "si")
-    # DbManager().store_data_from_topic(str(msg.topic), payload)
-    client.publish("prova/monitor/1", "si")
+    DbManager().store_data_from_topic(str(msg.topic), payload)
     topic = msg.topic.replace("sensors/", "monitor/")
     client.publish(topic, payload)
 
