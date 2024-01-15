@@ -5,7 +5,7 @@
     "humidity_threshold": 0.8,
     "yellow_time": 3,
     "red_threshold": 60,
-    "sound_threshold": 0.8
+    "sound_threshold": 0.9
   },
   "crossing_time":{
     "normal": 3,

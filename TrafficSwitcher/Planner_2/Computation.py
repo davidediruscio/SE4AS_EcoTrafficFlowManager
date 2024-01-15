@@ -29,8 +29,8 @@ class Computation:
             cls.instance._busy = False
         return cls.instance
 
-    def send_msg_to_switcher(self, traffic_switcher_id,  data):
-        DbManager().store_data_tag(traffic_switcher_id, "on", data)
+    # def send_msg_to_switcher(self, traffic_switcher_id,  data):
+        # DbManager().store_data_tag("Traffic Switcher Status", traffic_switcher_id, data)
 
     def get_switcher(self,cross_road, tl_id):
         for switcher, crossRoad_dict in self._traffic_switcher_groups.items():
@@ -41,12 +41,18 @@ class Computation:
 
     def check_status(self, traffic_switcher_id):
         return self._traffic_switcher_status[traffic_switcher_id] and \
-               time.time() - self._traffic_switcher_turn_on_time[traffic_switcher_id] > self._turn_on_time # check se switcher acceso e se è passato il tempo di accensione
+               time.time() - self._traffic_switcher_turn_on_time[traffic_switcher_id] > self._turn_on_time 
+    # check se switcher acceso e se è passato il tempo di accensione
 
     def set_status(self, traffic_switcher_id, status):
-        self._traffic_switcher_status[traffic_switcher_id] = status
-        if status:
+        if status and \
+            traffic_switcher_id in self._traffic_switcher_status and \
+                self._traffic_switcher_status[traffic_switcher_id] == False:
+            
             self._traffic_switcher_turn_on_time[traffic_switcher_id] = time.time()
+        self._traffic_switcher_status[traffic_switcher_id] = status
+        DbManager().store_data_tag("Traffic Switcher Status", traffic_switcher_id, str(status))
+
 
     def set_prediction(self, traffic_switcher_id, prediction_time):
         self._prediction[traffic_switcher_id] = prediction_time

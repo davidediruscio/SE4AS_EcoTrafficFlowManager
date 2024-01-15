@@ -5,7 +5,7 @@ import re
 from influxdb_client.client.write_api import SYNCHRONOUS
 import json
 
-host = "configuration_module2"
+host = "configuration_module"
 #host = "localhost"
 url = f"http://{host}:5008/config/"
 
@@ -15,12 +15,10 @@ class DbManager:
     _org = "univaq"
     _host = "knowledge_module"  # "localhost"
     _url = "http://knowledge_module:8086"
-    _analysis_time: int
 
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(DbManager, cls).__new__(cls)
-            cls.instance._analysis_time = requests.get(url + "data/analysis_time").json()["data"]
             cls.instance._token = "seasinfluxdbtoken"
             cls.instance._client = influxdb_client.InfluxDBClient(url=cls.instance._url, token=cls.instance._token,
                                                                   org=cls.instance._org)

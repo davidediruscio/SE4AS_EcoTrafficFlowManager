@@ -16,12 +16,17 @@ def group_turn_on_msg(client, userdata, msg):
         pass
     client.publish(f"action/take_photo", True)
 
+def wait_emergency_end(client, userdata, msg):
+    pass
 
 def emergency_msg(client, userdata, msg):
     if eval(msg.payload.decode()):
         Computation().set_light_to_all(client, "RED")
+        client.message_callback_add("plan/traffic_light_group/+", wait_emergency_end)
     else:
-        client.publish(f"action/take_photo", True)
+        client.message_callback_add("plan/traffic_light_group/+", group_turn_on_msg)
+        client.publish("action/take_photo", True)
+
 
 
 if __name__ == "__main__":

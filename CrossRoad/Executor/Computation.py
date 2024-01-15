@@ -1,5 +1,7 @@
 import requests
 import time
+from DbManager import DbManager
+
 
 host = "configuration_module"
 #host = "localhost"
@@ -18,15 +20,18 @@ class Computation:
     def set_light_to_all(self, client, light="RED"):
         for group in self._groups:
             for tl in self._groups[group]:
+                DbManager().store_data_tag("Traffic Light Status", tl, light)
                 client.publish(f"action/traffic_light/{tl}", light)
 
     def set_green_light_to_group(self, client, group):
         for tl in self._groups[group]:
+            DbManager().store_data_tag("Traffic Light Status", tl, "GREEN")
             client.publish(f"action/traffic_light/{tl}", "GREEN")
 
         for g in self._groups:
             if g != group:
                 for tl in self._groups[g]:
+                    DbManager().store_data_tag("Traffic Light Status", tl, "RED")
                     client.publish(f"action/traffic_light/{tl}", "RED")
 
 

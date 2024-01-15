@@ -47,5 +47,5 @@ if __name__ == "__main__":
     while True:
         CrossRoad().get_humidity_sensor().simulate(client)
         CrossRoad().get_sound_sensor().simulate(client)
-        sleep(60)
+        sleep(30)
 
