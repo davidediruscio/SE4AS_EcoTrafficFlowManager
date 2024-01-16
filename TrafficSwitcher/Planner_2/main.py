@@ -25,8 +25,6 @@ def flux_mean_msg(client, userdata, msg):
     splitted_topic = msg.topic.split("/")
     cross_road_id = splitted_topic[3]
     tl_id = int(splitted_topic[4])
-    client.publish("prova/flux_mean_msg", msg.topic)
-    print(msg.topic)
     switcher_identifier = Computation().get_switcher(cross_road_id, tl_id)
     if payload > 0:
         Computation().set_status(switcher_identifier, True)

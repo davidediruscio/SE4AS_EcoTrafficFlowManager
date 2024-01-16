@@ -21,8 +21,6 @@ def main_loop(client):
 
 def analysis(client):
     fluxes_means = Computation().compute_means_fluxs()  # calcola i flussi medi dei semafori
-    print(fluxes_means)
-    client.publish("prova/flux", str(fluxes_means))
     DbManager().store_fluxes_means(fluxes_means)  # save data in db
     for key, flux_mean in fluxes_means.items():
         client.publish(f"traffic_switcher/analysis/flux_mean/{key[0]}/{key[1]}", flux_mean)  # pubblica i flussi

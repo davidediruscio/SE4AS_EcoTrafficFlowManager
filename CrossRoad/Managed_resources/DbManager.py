@@ -52,7 +52,6 @@ class DbManager:
                 f'|> filter(fn: (r) => r["cross_road"] == "{cross_road_id}")'\
                 f'|> filter(fn: (r) => r["tl_id"] == "{str(traffic_light_id)}")'
         tables = query_api.query(query, org="univaq")
-        print(tables.to_json())
         return json.loads(tables.to_json())
 
     def store_fluxes_means(self, fluxes_means):
