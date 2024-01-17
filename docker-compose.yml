@@ -49,10 +49,10 @@ services:
       - planner1_module
       - seas_influxdb
 
-  analyzer2_module:
-    image: se4as/analyzer2
-    build: TrafficSwitcher/Analyzer_2
-    container_name: se4as-analyzer_module2
+  analyzer_switcher_module:
+    image: se4as/analyzer_switcher
+    build: TrafficSwitcher/Analyzer_Switcher
+    container_name: se4as-analyzer_module_switcher
     hostname: analyzer_module2
     ports:
       - "8150:8080"
@@ -62,8 +62,8 @@ services:
       - TZ=Europe/Rome
     depends_on:
       - mosquitto_module
-      - configuration_module2
-      - planner2_module
+      - configuration_module_switcher
+      - planner_switcher_module
       - seas_influxdb
 
   planner1_module:
@@ -83,10 +83,10 @@ services:
       - executor
       - seas_influxdb
 
-  planner2_module:
-    image: se4as/planner2
-    build: TrafficSwitcher/Planner_2
-    container_name: se4as-planner2_module
+  planner_switcher_module:
+    image: se4as/planner_switcher
+    build: TrafficSwitcher/Planner_Switcher
+    container_name: se4as-planner_switcher_module
     hostname: planner2_module
     ports:
       - "8110:8080"
@@ -96,7 +96,7 @@ services:
       - TZ=Europe/Rome
     depends_on:
       - mosquitto_module
-      - configuration_module2
+      - configuration_module_switcher
       - seas_influxdb
 
   executor:
@@ -141,10 +141,10 @@ services:
       - mosquitto_module
 
 
-  configuration_module2:
-    image: se4as/configuration_module2
-    build: TrafficSwitcher/Configuration_2
-    container_name: se4as-configuration_module2
+  configuration_module_switcher:
+    image: se4as/configuration_module_switcher
+    build: TrafficSwitcher/Configuration_Switcher
+    container_name: se4as-configuration_module_switcher
     hostname: configuration_module2
     ports:
       - "8160:5008"
