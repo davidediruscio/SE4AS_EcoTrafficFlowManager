@@ -31,7 +31,7 @@ def take_photo_msg(client, userdata, msg):
 
 if __name__ == "__main__":
     # MQTT client creation
-    client = mqtt.Client("Managed_Resources", reconnect_on_failure=True)
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1,"Managed_Resources", reconnect_on_failure=True)
     #client.connect("localhost")
     client.connect("mosquitto_module", 1883)
     client.on_connect = on_connect

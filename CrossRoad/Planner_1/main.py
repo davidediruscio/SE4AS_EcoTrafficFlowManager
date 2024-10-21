@@ -65,7 +65,7 @@ def n_vehicles_msg(client, userdata, msg):
 
 
 if __name__ == "__main__":
-    client = mqtt.Client("Planner1")
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1,"Planner1")
     client.on_connect = on_connect
     client.message_callback_add("analysis/trafficLight/pressed_button/+", pressed_button_msg)
     client.message_callback_add("analysis/trafficLight/number_vehicles/+", n_vehicles_msg)

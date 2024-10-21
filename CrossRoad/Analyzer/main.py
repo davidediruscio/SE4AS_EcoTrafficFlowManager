@@ -45,7 +45,7 @@ def humidity_msg(client, userdata, msg):
 
 
 if __name__ == "__main__":
-    client = mqtt.Client("Analyzer")
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1,"Analyzer")
     client.on_connect = on_connect
     client.message_callback_add("monitor/trafficLight/vehicles/+", camera_msg)
     client.message_callback_add("monitor/humidity", humidity_msg)

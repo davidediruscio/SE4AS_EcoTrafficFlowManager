@@ -37,7 +37,7 @@ def on_connect(client, userdata, flags, rc):
 
 
 if __name__ == "__main__":
-    client = mqtt.Client(client_id="ANALYZER2", reconnect_on_failure=True)
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1,client_id="ANALYZER2", reconnect_on_failure=True)
     client.on_connect = on_connect
     client.connect("mosquitto_module", 1883, 60)
     client.loop_start()

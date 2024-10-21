@@ -30,7 +30,7 @@ def emergency_msg(client, userdata, msg):
 
 
 if __name__ == "__main__":
-    client = mqtt.Client("Executor")
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1,"Executor")
     client.on_connect = on_connect
     client.message_callback_add("plan/traffic_light_group/+", group_turn_on_msg)
     client.message_callback_add("plan/emergency", emergency_msg)
