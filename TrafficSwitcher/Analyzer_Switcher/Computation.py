@@ -1,4 +1,5 @@
 import requests
+import time
 from DbManager import DbManager
 from Predictor import Predictor
 import numpy as np
@@ -6,6 +7,17 @@ import numpy as np
 host = "configuration_module2"
 #host = "localhost"
 url = f"http://{host}:5008/config/"
+
+
+def get_config(endpoint, retries=15, delay=2):
+    for i in range(retries):
+        try:
+            return requests.get(url + endpoint)
+        except requests.exceptions.RequestException:
+            if i == retries - 1:
+                raise
+            time.sleep(delay)
+
 
 class Computation:
 
@@ -18,9 +30,9 @@ class Computation:
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(Computation, cls).__new__(cls)
-            cls.instance._analysis_time = requests.get(url + "data/analysis_time").json()["data"]
-            cls.instance._prediction_time = requests.get(url + "data/prediction_time").json()["data"]
-            cls.instance._traffic_switcher_groups = requests.get(url + "traffic_switcher_groups").json()
+            cls.instance._analysis_time = get_config("data/analysis_time").json()["data"]
+            cls.instance._prediction_time = get_config("data/prediction_time").json()["data"]
+            cls.instance._traffic_switcher_groups = get_config("traffic_switcher_groups").json()
             cls.instance._flux_means = {}
         return cls.instance
 

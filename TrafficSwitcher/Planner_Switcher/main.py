@@ -9,7 +9,7 @@ import paho.mqtt.client as mqtt
 from Computation import Computation
 
 
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, reason_code, properties):
     client.subscribe("traffic_switcher/analysis/#")
 
 def flux_prediction_msg(client, userdata, msg):
@@ -37,7 +37,7 @@ def flux_mean_msg(client, userdata, msg):
 
 
 if __name__ == '__main__':
-    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1,client_id="PLANNER2", reconnect_on_failure=True)
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id="PLANNER2", reconnect_on_failure=True)
     #client.connect("localhost", 1883)
     client.connect("mosquitto_module", 1883)
     client.on_connect = on_connect

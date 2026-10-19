@@ -2,4 +2,4 @@ paho-mqtt
 influxdb-client
 requests
 pillow
-opencv-python-headless
+opencv-python-headless<5

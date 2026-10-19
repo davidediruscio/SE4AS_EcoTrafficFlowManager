@@ -4,10 +4,21 @@ from Sensors.Button import Button
 from Sensors.Camera import Camera
 from TrafficLight import TrafficLight
 import requests
+import time
 
 host = "configuration_module"
 #host = "localhost"
 url = f"http://{host}:5008/config/"
+
+
+def get_config(endpoint, retries=15, delay=2):
+    for i in range(retries):
+        try:
+            return requests.get(url + endpoint)
+        except requests.exceptions.RequestException:
+            if i == retries - 1:
+                raise
+            time.sleep(delay)
 
 
 class CrossRoad:
@@ -24,14 +35,14 @@ class CrossRoad:
             cls.instance._pedestrian_traffic_lights = {}
             cls.instance._traffic_lights = {}
             i = 1
-            yellow_time = requests.get(url + "data/yellow_time").json()["data"]
-            while i <= requests.get(url + "number_traffic_light/vehicles").json()["data"]:
+            yellow_time = get_config("data/yellow_time").json()["data"]
+            while i <= get_config("number_traffic_light/vehicles").json()["data"]:
                 traffic_light = TrafficLight(i, yellow_time)
                 cls.instance._vehicles_traffic_lights[traffic_light] = Camera(traffic_light)
                 cls.instance._traffic_lights[i] = traffic_light
                 i += 1
             j = 1
-            while j <= requests.get(url + "number_traffic_light/pedestrians").json()["data"]:
+            while j <= get_config("number_traffic_light/pedestrians").json()["data"]:
                 traffic_light = TrafficLight(i, yellow_time)
                 cls.instance._pedestrian_traffic_lights[traffic_light] = Button(traffic_light)
                 cls.instance._traffic_lights[i] = traffic_light

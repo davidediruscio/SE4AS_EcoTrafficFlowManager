@@ -20,6 +20,7 @@ services:
     build: CrossRoad/Monitor
     container_name: se4as-monitor_module
     hostname: monitor_module
+    restart: on-failure
     ports:
       - "8080:8080"
     expose:
@@ -37,6 +38,7 @@ services:
     build: CrossRoad/Analyzer
     container_name: se4as-analyzer_module
     hostname: analyzer_module
+    restart: on-failure
     ports:
       - "8090:8080"
     expose:
@@ -54,6 +56,7 @@ services:
     build: TrafficSwitcher/Analyzer_Switcher
     container_name: se4as-analyzer_module_switcher
     hostname: analyzer_module2
+    restart: on-failure
     ports:
       - "8150:8080"
     expose:
@@ -71,6 +74,7 @@ services:
     build: CrossRoad/Planner_1
     container_name: se4as-planner1_module
     hostname: planner1_module
+    restart: on-failure
     ports:
       - "8100:8080"
     expose:
@@ -88,6 +92,7 @@ services:
     build: TrafficSwitcher/Planner_Switcher
     container_name: se4as-planner_switcher_module
     hostname: planner2_module
+    restart: on-failure
     ports:
       - "8110:8080"
     expose:
@@ -104,6 +109,7 @@ services:
     build: CrossRoad/Executor
     container_name: se4as-executor_module
     hostname: executor_module
+    restart: on-failure
     ports:
       - "8120:8080"
     expose:
@@ -118,6 +124,7 @@ services:
     build: CrossRoad/Managed_resources
     container_name: se4as-managed_resources_module
     hostname: managed_resources_module
+    restart: on-failure
     ports:
       - "8130:8080"
     expose:
@@ -133,6 +140,7 @@ services:
     build: CrossRoad/Configuration
     container_name: se4as-configuration_module
     hostname: configuration_module
+    restart: on-failure
     ports:
       - "8140:5008"
     expose:
@@ -146,6 +154,7 @@ services:
     build: TrafficSwitcher/Configuration_Switcher
     container_name: se4as-configuration_module_switcher
     hostname: configuration_module2
+    restart: on-failure
     ports:
       - "8160:5008"
     expose:

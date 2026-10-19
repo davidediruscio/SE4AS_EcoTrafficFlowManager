@@ -6,6 +6,17 @@ host = "configuration_module2"
 #host = "localhost"
 url = f"http://{host}:5008/config/"
 
+
+def get_config(endpoint, retries=15, delay=2):
+    for i in range(retries):
+        try:
+            return requests.get(url + endpoint)
+        except requests.exceptions.RequestException:
+            if i == retries - 1:
+                raise
+            time.sleep(delay)
+
+
 class Computation:
 
     _prediction: dict
@@ -20,9 +31,9 @@ class Computation:
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(Computation, cls).__new__(cls)
-            cls.instance._traffic_switcher_groups = requests.get(url + "traffic_switcher_groups").json()
-            cls.instance._turn_on_time = requests.get(url + "data/turn_on_time").json()["data"]
-            cls.instance._early_turn_on_time = requests.get(url + "data/early_turn_on_time").json()["data"]
+            cls.instance._traffic_switcher_groups = get_config("traffic_switcher_groups").json()
+            cls.instance._turn_on_time = get_config("data/turn_on_time").json()["data"]
+            cls.instance._early_turn_on_time = get_config("data/early_turn_on_time").json()["data"]
             cls.instance._traffic_switcher_status = {switcher: False for switcher, _ in cls.instance._traffic_switcher_groups.items()}
             cls.instance._traffic_switcher_turn_on_time = {switcher: -1 for switcher, _ in cls.instance._traffic_switcher_groups.items()}
             cls.instance._prediction = {}

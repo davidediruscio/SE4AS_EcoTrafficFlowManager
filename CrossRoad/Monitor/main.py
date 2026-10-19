@@ -2,7 +2,7 @@ from DbManager import DbManager
 import paho.mqtt.client as mqtt
 
 
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, reason_code, properties):
     client.subscribe("sensors/#")
 
 
@@ -14,7 +14,7 @@ def on_message(client, userdata, msg):
 
 
 if __name__ == '__main__':
-    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1,client_id="MONITOR", reconnect_on_failure=True)
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id="MONITOR", reconnect_on_failure=True)
     # client.connect("localhost", 1883)
     client.connect("mosquitto_module", 1883)
     client.on_connect = on_connect

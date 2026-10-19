@@ -10,6 +10,16 @@ host = "configuration_module2"
 url = f"http://{host}:5008/config/"
 
 
+def get_config(endpoint, retries=15, delay=2):
+    for i in range(retries):
+        try:
+            return requests.get(url + endpoint)
+        except requests.exceptions.RequestException:
+            if i == retries - 1:
+                raise
+            time.sleep(delay)
+
+
 class DbManager:
     _token: str
     _org = "univaq"
@@ -21,7 +31,7 @@ class DbManager:
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(DbManager, cls).__new__(cls)
-            cls.instance._analysis_time = requests.get(url + "data/analysis_time").json()["data"]
+            cls.instance._analysis_time = get_config("data/analysis_time").json()["data"]
             # cls.instance._analysis_time = requests.get(url + "data/prediction_interval_data").json()["data"]
             cls.instance._token = "seasinfluxdbtoken"
             cls.instance._client = influxdb_client.InfluxDBClient(url=cls.instance._url, token=cls.instance._token,

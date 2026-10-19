@@ -6,7 +6,7 @@ from time import sleep
 from DbManager import DbManager
 
 
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, reason_code, properties):
     client.subscribe("action/+")
 
 
@@ -31,7 +31,7 @@ def take_photo_msg(client, userdata, msg):
 
 if __name__ == "__main__":
     # MQTT client creation
-    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1,"Managed_Resources", reconnect_on_failure=True)
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, "Managed_Resources", reconnect_on_failure=True)
     #client.connect("localhost")
     client.connect("mosquitto_module", 1883)
     client.on_connect = on_connect

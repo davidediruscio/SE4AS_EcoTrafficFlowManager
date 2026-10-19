@@ -9,6 +9,16 @@ host = "configuration_module"
 url = f"http://{host}:5008/config/"
 
 
+def get_config(endpoint, retries=15, delay=2):
+    for i in range(retries):
+        try:
+            return requests.get(url + endpoint)
+        except requests.exceptions.RequestException:
+            if i == retries - 1:
+                raise
+            time.sleep(delay)
+
+
 class DbManager:
     _token: str
     _org = "univaq"
@@ -20,7 +30,7 @@ class DbManager:
         if not hasattr(cls, 'instance'):
             cls.instance = super(DbManager, cls).__new__(cls)
             cls.instance._token = "seasinfluxdbtoken"
-            cls.instance._cross_road_id = requests.get(url + "data/cross_road_id").json()["data"]
+            cls.instance._cross_road_id = get_config("data/cross_road_id").json()["data"]
             cls.instance._client = influxdb_client.InfluxDBClient(url=cls.instance._url, token=cls.instance._token,
                                                                   org=cls.instance._org)
         return cls.instance

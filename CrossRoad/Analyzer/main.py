@@ -11,11 +11,23 @@ import time
 host = "configuration_module"
 # host = "localhost"
 url = f"http://{host}:5008/config/"
-humidity_threshold = requests.get(url + "data/humidity_threshold").json()["data"]
-sound_threshold = requests.get(url + "data/sound_threshold").json()["data"]
 
 
-def on_connect(client, userdata, flags, rc):
+def get_config(endpoint, retries=15, delay=2):
+    for i in range(retries):
+        try:
+            return requests.get(url + endpoint)
+        except requests.exceptions.RequestException:
+            if i == retries - 1:
+                raise
+            time.sleep(delay)
+
+
+humidity_threshold = get_config("data/humidity_threshold").json()["data"]
+sound_threshold = get_config("data/sound_threshold").json()["data"]
+
+
+def on_connect(client, userdata, flags, reason_code, properties):
     client.subscribe("monitor/#")
 
 
@@ -45,7 +57,7 @@ def humidity_msg(client, userdata, msg):
 
 
 if __name__ == "__main__":
-    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1,"Analyzer")
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, "Analyzer")
     client.on_connect = on_connect
     client.message_callback_add("monitor/trafficLight/vehicles/+", camera_msg)
     client.message_callback_add("monitor/humidity", humidity_msg)

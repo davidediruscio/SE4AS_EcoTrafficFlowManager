@@ -3,7 +3,7 @@ import paho.mqtt.client as mqtt
 import time
 
 
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, reason_code, properties):
     client.subscribe("plan/#")
 
 
@@ -30,7 +30,7 @@ def emergency_msg(client, userdata, msg):
 
 
 if __name__ == "__main__":
-    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1,"Executor")
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, "Executor")
     client.on_connect = on_connect
     client.message_callback_add("plan/traffic_light_group/+", group_turn_on_msg)
     client.message_callback_add("plan/emergency", emergency_msg)

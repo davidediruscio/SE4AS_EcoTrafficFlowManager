@@ -7,6 +7,17 @@ host = "configuration_module"
 #host = "localhost"
 url = f"http://{host}:5008/config/"
 
+
+def get_config(endpoint, retries=15, delay=2):
+    for i in range(retries):
+        try:
+            return requests.get(url + endpoint)
+        except requests.exceptions.RequestException:
+            if i == retries - 1:
+                raise
+            time.sleep(delay)
+
+
 class Computation:
 
     _starvation_queue: list
@@ -27,22 +38,22 @@ class Computation:
     def __new__(cls):
         if not hasattr(cls, 'instance'):
             cls.instance = super(Computation, cls).__new__(cls)
-            cls.instance._number_traffic_light = requests.get(url + "number_traffic_light").json()["data"]
+            cls.instance._number_traffic_light = get_config("number_traffic_light").json()["data"]
             now = time.time()
             cls.instance._last_green_time = {}
             for i in range(cls.instance._number_traffic_light):
                 cls.instance._last_green_time[i + 1] = now
             cls.instance._count = 0
-            cls.instance._crossing_time = requests.get(url + "crossing_time/normal").json()["data"]
-            cls.instance._crossing_time_pedestrian = requests.get(url + "crossing_time/pedestrian").json()["data"]
-            cls.instance._number_road_lines = requests.get(url + "data/number_road_lines").json()["data"]
+            cls.instance._crossing_time = get_config("crossing_time/normal").json()["data"]
+            cls.instance._crossing_time_pedestrian = get_config("crossing_time/pedestrian").json()["data"]
+            cls.instance._number_road_lines = get_config("data/number_road_lines").json()["data"]
             cls.instance._emergency = False
             cls.instance._bad_weather = False
             cls.instance._estimation_time = {i+1: 0 for i in range(cls.instance._number_traffic_light)}
             cls.instance._starvation_queue = []
             cls.instance._last_pressed_button_time = {}
             cls.instance._just_pressed_button = {}
-            cls.instance._groups = requests.get(url + "traffic_light_groups").json()
+            cls.instance._groups = get_config("traffic_light_groups").json()
         return cls.instance
 
     def get_emergency(self):
